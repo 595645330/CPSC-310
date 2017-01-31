@@ -55,20 +55,20 @@ describe("Test1", function () {
     //     });
     // });
 
-    it.only("addDataset201", function () {
-        var f1 = new InsightFacade();
-        return f1.addDataset("D1",getBase64()).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(201);
-        }).catch(function (err) {
-            Log.test(err);
-            expect.fail();
-        })
-    });
+    // it.only("addDataset201", function () {
+    //     var f1 = new InsightFacade();
+    //     return f1.addDataset("D1",getBase64()).then(function(response:InsightResponse) {
+    //         Log.test('Value: ' + response);
+    //         expect(response["code"]).to.equal(201);
+    //     }).catch(function (err) {
+    //         Log.test(err);
+    //         expect.fail();
+    //     })
+    // });
 
     // it.only("addDataset204", function () {
     //     var f1 = new InsightFacade();
-    //     return f1.addDataset("D1",getBase64()).then(function(response:InsightResponse) {
+    //     return f1.addDataset("D2",getBase64()).then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response);
     //         expect(response["code"]).to.equal(204);
     //     }).catch(function (err) {
@@ -76,6 +76,21 @@ describe("Test1", function () {
     //         expect.fail();
     //     })
     // });
+
+    // it.only("removeDataset201", function () {
+    //     var f1 = new InsightFacade();
+    //     return f1.removeDataset("D2").then(function(response:InsightResponse) {
+    //         Log.test('Value: ' + response);
+    //         expect(response["code"]).to.equal(201);
+    //     }).catch(function (err) {
+    //         Log.test(err);
+    //         expect.fail();
+    //     })
+    // });
+
+
+
+
 
 
 });

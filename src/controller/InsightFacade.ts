@@ -51,10 +51,10 @@ export default class InsightFacade implements IInsightFacade {
                         }
                     }
                     try {
-                        fs.accessSync(id + '.txt')
-                        response={"code":201,"body":{}}
+                        fs.accessSync(id + '.txt');
+                        response={"code":201,"body":{}};
                     }catch(err){
-                        response={"code":204,"body":{}}
+                        response={"code":204,"body":{}};
                     }
                     fs.writeFile(id+'.txt', JSON.stringify(lists), (err: any) => {
                         if (err) {
@@ -72,7 +72,20 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     removeDataset(id: string): Promise<InsightResponse> {
-        return null
+        return new Promise(function (fulfill, reject) {
+            var fs = require("fs");
+            var JSZip = require("jszip");
+            let response:InsightResponse;
+            try {
+                fs.accessSync(id + '.txt');
+                fs.unlinkSync(id + '.txt');
+                response={"code":201,"body":{}};
+            }catch(err){
+                response={"code":204,"body":{}};
+                reject(response);
+            }
+            fulfill(response);
+        });
     }
 
     performQuery(query: QueryRequest): Promise <InsightResponse> {

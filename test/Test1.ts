@@ -5,7 +5,7 @@
 import Server from "../src/rest/Server";
 import {expect} from 'chai';
 import Log from "../src/Util";
-import {InsightResponse} from "../src/controller/IInsightFacade";
+import {InsightResponse, QueryRequest} from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 
 describe("Test1", function () {
@@ -38,24 +38,8 @@ describe("Test1", function () {
         return new Buffer(fs.readFileSync('courses.zip')).toString('base64');
     }
 
-    // var file = document.querySelector('#files > input[type="file"]').files[0];
-    // prints the base64 string
 
-    // it.only("addDataset", function (done) {
-    //     var fs = require("fs");
-    //     var JSZip = require("jszip");
-    //     let s1:string = "";
-    //     s1=getBase64();
-    //     var f1 = new InsightFacade();
-    //
-    //     f1.addDataset("D1", s1).then(function(response:InsightResponse){
-    //         console.log(response);
-    //     }).catch(function(err:any){
-    //         console.log("Error1231231");
-    //     });
-    // });
-
-    // it.only("addDataset201", function () {
+    // it.only("addDatasetOld201", function () {
     //     var f1 = new InsightFacade();
     //     return f1.addDataset("D1",getBase64()).then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response);
@@ -66,7 +50,7 @@ describe("Test1", function () {
     //     })
     // });
 
-    // it.only("addDataset204", function () {
+    // it.only("addDatasetNew204", function () {
     //     var f1 = new InsightFacade();
     //     return f1.addDataset("D2",getBase64()).then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response);
@@ -76,6 +60,32 @@ describe("Test1", function () {
     //         expect.fail();
     //     })
     // });
+
+    it.only("performQuery204", function () {
+        var f1 = new InsightFacade();
+        let q1:QueryRequest = {
+            "WHERE":{
+                "GT":{
+                    "courses_avg":97
+                }
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            Log.test(err);
+            expect.fail();
+        })
+    });
 
     // it.only("removeDataset201", function () {
     //     var f1 = new InsightFacade();

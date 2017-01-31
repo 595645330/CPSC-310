@@ -11,6 +11,7 @@ export default class InsightFacade implements IInsightFacade {
         Log.trace('InsightFacadeImpl::init()');
     }
 
+
     addDataset(id: string, content: string): Promise<InsightResponse> {
 
         return new Promise(function (fulfill, reject) {
@@ -55,13 +56,14 @@ export default class InsightFacade implements IInsightFacade {
                         response={"code":201,"body":{}};
                     }catch(err){
                         response={"code":204,"body":{}};
+                        fs.writeFile(id+'.txt', JSON.stringify(lists), (err: any) => {
+                            if (err) {
+                                throw err;
+                            }
+                            fulfill(response);
+                        });
                     }
-                    fs.writeFile(id+'.txt', JSON.stringify(lists), (err: any) => {
-                        if (err) {
-                            throw err;
-                        }
-                        fulfill(response);
-                    });
+                    fulfill(response)
                 }).catch(function(err:any) {
                     reject({"code":400,"body":{}})
                 });
@@ -89,6 +91,32 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     performQuery(query: QueryRequest): Promise <InsightResponse> {
-        return null;
+        return new Promise(function (fulfill, reject) {
+            var fs = require("fs");
+            var JSZip = require("jszip");
+            let response:InsightResponse;
+            fs.readFile('D1.txt',"utf-8", (err:any, data:any) => {
+                if (err){
+                    throw err;
+                }
+                data=JSON.parse(data);
+                let c1:any=query["WHERE"];
+                if(Object.keys(c1)[0]==='AND'){
+                    let c2:any=c1["AND"];
+                    for(let key of Object.keys(c2)){
+
+                    }
+                }
+                else if(Object.keys(c1)[0]==='AND'){
+
+                }
+                else{
+
+                }
+            });
+
+
+
+        });
     }
 }

@@ -11,13 +11,50 @@ export interface InsightResponse {
 
 export interface QueryRequest {
     // you can define your own structure that complies with the EBNF here
-    body:any
-    option:any
+    WHERE:any
+    OPTIONS:any
+}
+export interface OPTIONS{
+    OPTIONS:any
 }
 
-// export interface Filter {
-//
-// }
+export interface WHERE {
+    WHERE:any
+}
+
+export interface FILTER {
+    LOGICCOMPARISON?:any
+    MCOMPARISON?:any
+    SCOMPARISON?:any
+    NEGATION?:any
+}
+
+export interface LOGIC{
+    AND?:Array<Object>
+    OR?:Array<Object>
+}
+
+export interface MCOMPARATOR{
+    LT?:Object
+    GT?:Object
+    EQ?:Object
+}
+
+export interface IS{
+    IS:Object
+}
+
+export interface NOT{
+    NOT:Object
+}
+
+export interface COLUMNS{
+    COLUMNS:Array<string>
+}
+
+export interface VIEW{
+    VIEW:String
+}
 
 export interface IInsightFacade {
 

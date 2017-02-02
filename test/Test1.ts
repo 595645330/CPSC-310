@@ -61,17 +61,62 @@ describe("Test1", function () {
     //     })
     // });
 
-    it.only("performQuery204", function () {
+    // it.only("performQuery200", function () {
+    //     var f1 = new InsightFacade();
+    //     let q1:QueryRequest = {
+    //         "WHERE":{
+    //             "IS":{
+    //                 "courses_dept":"cpsc"
+    //             }
+    //         },
+    //         "OPTIONS":{
+    //             "COLUMNS":[
+    //                 "courses_dept",
+    //                 "courses_avg"
+    //             ],
+    //             "ORDER":"courses_avg",
+    //             "FORM":"TABLE"
+    //         }
+    //     }
+    //     return f1.performQuery(q1).then(function(response:InsightResponse) {
+    //         Log.test('Value: ' + response);
+    //         expect(response["code"]).to.equal(200);
+    //     }).catch(function (err) {
+    //         Log.test(err);
+    //         expect.fail();
+    //     })
+    // });
+
+    it.only("performQuery200", function () {
         var f1 = new InsightFacade();
         let q1:QueryRequest = {
             "WHERE":{
-                "GT":{
-                    "courses_avg":97
-                }
+                "OR":[
+                    {
+                        "AND":[
+                            {
+                                "GT":{
+                                    "courses_avg":90
+                                }
+                            },
+                            {
+                                "IS":{
+                                    "courses_dept":"adhe"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "EQ":{
+                            "courses_avg":95
+                        }
+                    }
+                ]
             },
             "OPTIONS":{
                 "COLUMNS":[
                     "courses_dept",
+                    "courses_id",
                     "courses_avg"
                 ],
                 "ORDER":"courses_avg",
@@ -87,11 +132,23 @@ describe("Test1", function () {
         })
     });
 
-    // it.only("removeDataset201", function () {
+
+    // it.only("removeDataset204", function () {
     //     var f1 = new InsightFacade();
     //     return f1.removeDataset("D2").then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response);
-    //         expect(response["code"]).to.equal(201);
+    //         expect(response["code"]).to.equal(204);
+    //     }).catch(function (err) {
+    //         Log.test(err);
+    //         expect.fail();
+    //     })
+    // });
+
+    // it.only("removeDataset404", function () {
+    //     var f1 = new InsightFacade();
+    //     return f1.removeDataset("D2").then(function(response:InsightResponse) {
+    //         Log.test('Value: ' + response);
+    //         expect(response["code"]).to.equal(404);
     //     }).catch(function (err) {
     //         Log.test(err);
     //         expect.fail();

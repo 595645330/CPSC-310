@@ -41,7 +41,7 @@ describe("Test1", function () {
 
     // it.only("addDatasetOld201", function () {
     //     var f1 = new InsightFacade();
-    //     return f1.addDataset("D1",getBase64()).then(function(response:InsightResponse) {
+    //     return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response);
     //         expect(response["code"]).to.equal(201);
     //     }).catch(function (err) {

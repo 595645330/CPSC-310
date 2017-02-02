@@ -74,6 +74,8 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
+
+
     removeDataset(id: string): Promise<InsightResponse> {
         return new Promise(function (fulfill, reject) {
             var fs = require("fs");
@@ -101,7 +103,17 @@ export default class InsightFacade implements IInsightFacade {
             let listOfCourses:any [] = [];
             let listOfUUID:any [] = [];
             let response:InsightResponse;
-            fs.readFile('D1.txt',"utf-8", (err:any, data:any) => {
+
+            //data=JSON.parse(data);
+            let where1:any=query["WHERE"];
+            let option1:any=query["OPTIONS"];
+            for(let a of option1["COLUMNS"]){
+                listsOfColumn.push(a);
+            }
+            output.render=option1["FORM"];
+            let order:any= option1["ORDER"];
+
+            fs.readFile("courses.txt","utf-8", (err:any, data:any) => {
                 if (err){
                     throw err;
                 }
@@ -114,6 +126,7 @@ export default class InsightFacade implements IInsightFacade {
                 output.render=option1["FORM"];
                 let order:any= option1["ORDER"];
                 let helper2=new Helper();
+                //console.log(where1);
                 listOfUUID=helper2.CompareNum(where1,data);
                 for(let uuid of listOfUUID){
                       for(let d of data){
@@ -129,13 +142,12 @@ export default class InsightFacade implements IInsightFacade {
                 listOfCourses.sort(function(a, b){
                     return a[order] - b[order];
                 });
-                console.log(listOfCourses);
+                //console.log(listOfCourses);
+                output.result=listOfCourses;
+                //output.push(listOfCourses);
                 fulfill({"code":200,"body":output});
+                //console.log(output);
             });
         });
     }
-
-
-
-
 }

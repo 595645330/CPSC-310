@@ -4,12 +4,7 @@
 import {IInsightFacade, InsightResponse, QueryRequest} from "./IInsightFacade";
 
 import Log from "../Util";
-
-import helper from "./Helper";
-import {isArray} from "util";
-import keys = require("core-js/fn/array/keys");
-import {isUndefined} from "util";
-import {isString} from "util";
+import Helper from "./Helper";
 
 export default class InsightFacade implements IInsightFacade {
 
@@ -27,13 +22,6 @@ export default class InsightFacade implements IInsightFacade {
             let lists:any [] = [];
             var new_zip = new JSZip();
             let response:InsightResponse;
-
-
-
-            //my change
-            if (content === null || id === null || isUndefined(content) || isUndefined(id)){reject({"code":400,"body":{"error": "my text"}})}
-
-
 
             new_zip.loadAsync(content, {base64: true}).then(function(zip:JSZip){
                 let files:any= zip.files;
@@ -78,13 +66,15 @@ export default class InsightFacade implements IInsightFacade {
                     }
                     fulfill(response)
                 }).catch(function(err:any) {
-                    reject({"code":400,"body":{"error": "my text"}})
+                    reject({"code":400,"body":{"error":"error"}})
                 });
             }).catch(function(err:any){
-                reject({"code":400,"body":{"error": "my text"}})
+                reject({"code":400,"body":{"error":"error"}})
             });
         });
     }
+
+
 
     removeDataset(id: string): Promise<InsightResponse> {
         return new Promise(function (fulfill, reject) {
@@ -96,79 +86,68 @@ export default class InsightFacade implements IInsightFacade {
                 fs.unlinkSync(id + '.txt');
                 response={"code":204,"body":{}};
             }catch(err){
-                response={"code":404,"body":{"error": "my text"}};
+                response={"code":404,"body":{"error":"the operation was unsuccessful because the delete was for a resource that was not previously added."}};
                 reject(response);
             }
             fulfill(response);
         });
     }
 
-
     performQuery(query: QueryRequest): Promise <InsightResponse> {
+        let that = this;
         return new Promise(function (fulfill, reject) {
             var fs = require("fs");
             var JSZip = require("jszip");
-            var obj = new Object();
+            let output:any={};
+            let listsOfColumn:any [] = [];
+            let listOfCourses:any [] = [];
+            let listOfUUID:any [] = [];
             let response:InsightResponse;
-            let uuids : any[] = [];
-            let tosort : any[] = [];
-            fs.readFile('courses.txt',"utf-8", (err:any, data:any) => {
 
+            //data=JSON.parse(data);
+            let where1:any=query["WHERE"];
+            let option1:any=query["OPTIONS"];
+            for(let a of option1["COLUMNS"]){
+                listsOfColumn.push(a);
+            }
+            output.render=option1["FORM"];
+            let order:any= option1["ORDER"];
+
+            fs.readFile("courses.txt","utf-8", (err:any, data:any) => {
                 if (err){
-                    reject({"code":424,"body":{"missing": ["courses"]}})
+                    throw err;
                 }
-                try {JSON.parse(data)}
-                catch (err) {reject({"code":400,"body":{"error": "cannot parse JSON"}})}
-                obj=JSON.parse(data);
-                // console.log("WHERE");
-                // console.log(query["WHERE"]);
-                let c1:any=query["WHERE"];
-
-                let h = new helper();
-
-                // try {h.helper(c1,obj)}
-                // catch (err) {reject({"code":400,"body":{"error": "helper function failed"}})}
-
-                h.helper(c1,obj).then(function (list: any[]) {
-                    var options = query["OPTIONS"];
-                    let columns: string[] = options["COLUMNS"];
-                    var sortaccordto = options["ORDER"];
-                    let form: string = options["FORM"];
-
-                    // if (!(isArray(options))) {reject({"code":400,"body":{"error": "columns not a list"}})}
-                    //
-                    // if (!(sortaccordto instanceof String) || !(form === "TABLE")){
-                    //     reject({"code":400,"body":{"error": "render or form wrong"}})
-                    // }
-
-                    for (let zk of list) {
-                        let save:any={};
-                        for (let eachcol of columns){
-                            save[eachcol] = zk[eachcol];
-                        }
-                        tosort.push(save);
-                    }
-                    tosort.sort((function(a, b){
-                        return a[sortaccordto] - b[sortaccordto];
-                    }));
-
-                    //console.log("tosort");
-                    //console.log(tosort);
-
-                    let resultbody: any = {};
-                    resultbody = {render: form,result: tosort};
-                    //console.log(resultbody);
-                    fulfill({"code":200,"body":resultbody});
-                }).catch(function (err) {
-                    //console.log(err);
-                    reject({"code":400,"body":{"error": err}});
+                data=JSON.parse(data);
+                let where1:any=query["WHERE"];
+                let option1:any=query["OPTIONS"];
+                for(let a of option1["COLUMNS"]){
+                    listsOfColumn.push(a);
+                }
+                output.render=option1["FORM"];
+                let order:any= option1["ORDER"];
+                let helper2=new Helper();
+                //console.log(where1);
+                listOfUUID=helper2.CompareNum(where1,data);
+                for(let uuid of listOfUUID){
+                      for(let d of data){
+                          if(d["courses_uuid"]===uuid){
+                              let object1:any={};
+                              for(let z of listsOfColumn){
+                                  object1[z]=d[z];
+                              }
+                              listOfCourses.push(object1);
+                          }
+                      }
+                }
+                listOfCourses.sort(function(a, b){
+                    return a[order] - b[order];
                 });
+                //console.log(listOfCourses);
+                output.result=listOfCourses;
+                //output.push(listOfCourses);
+                fulfill({"code":200,"body":output});
+                console.log(output);
             });
-
-
-
-
         });
-
     }
 }

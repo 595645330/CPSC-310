@@ -375,7 +375,7 @@ export default class InsightFacade implements IInsightFacade {
 
 
         else if ("NOT" == Object.keys(tofilt)[0]) {
-            if (!(tofilt["Not"] instanceof Object)) {
+            if (!(tofilt["NOT"] instanceof Object)) {
                 throw new Error();
             }
             var not = tofilt["NOT"];

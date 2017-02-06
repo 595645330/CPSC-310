@@ -48,7 +48,85 @@ describe("Test1", function () {
             expect.fail();
         })
     });
+    it.only("simple query EQ 200", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE":{
+                "EQ":{
+                    "courses_avg":97
+                }
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
 
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            console.log(response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("wrong column content 400", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {"courses_instructor": "*ave*"}
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_instructor",
+                    "courses_avggfgfg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }
+
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            console.log(response);
+            expect(response["code"]).to.equal(400);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("wrong key 400", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {"courses_instructor": "*ave*"}
+            },
+            "OPTIONS": {
+                "COLUM": [
+                    "courses_instructor",
+                    "courses_avg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }
+
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            console.log(response);
+            expect(response["code"]).to.equal(400);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
     it.only("nested is 200", function () {
         var f1 = new InsightFacade();
         let q1:QueryRequest = {
@@ -109,15 +187,15 @@ describe("Test1", function () {
         let q1:QueryRequest = {
             "WHERE": {
                 "OR": []
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "courses_instructor",
-                    "courses_avg"
-                ],
-                "ORDER": "courses_avg",
-                "FORM": "TABLE"
-            }
+                },
+                "OPTIONS": {
+                    "COLUMNS": [
+                        "courses_instructor",
+                        "courses_avg"
+                    ],
+                    "ORDER": "courses_avg",
+                    "FORM": "TABLE"
+                }
 
         }
 
@@ -176,40 +254,40 @@ describe("Test1", function () {
 
     it.only("performQuery200complex", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
-            "WHERE":{
-                "OR":[
-                    {
-                        "AND":[
-                            {
-                                "GT":{
-                                    "courses_avg":90
-                                }
-                            },
-                            {
-                                "IS":{
-                                    "courses_dept":"adhe"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "EQ":{
-                            "courses_avg":95
-                        }
-                    }
-                ]
-            },
-            "OPTIONS":{
-                "COLUMNS":[
-                    "courses_dept",
-                    "courses_id",
-                    "courses_avg"
-                ],
-                "ORDER":"courses_avg",
-                "FORM":"TABLE"
-            }
-        }
+         let q1:QueryRequest = {
+             "WHERE":{
+                 "OR":[
+                     {
+                         "AND":[
+                             {
+                                 "GT":{
+                                     "courses_avg":90
+                                 }
+                             },
+                             {
+                                 "IS":{
+                                     "courses_dept":"adhe"
+                                 }
+                             }
+                         ]
+                     },
+                     {
+                         "EQ":{
+                             "courses_avg":95
+                         }
+                     }
+                 ]
+             },
+             "OPTIONS":{
+                 "COLUMNS":[
+                     "courses_dept",
+                     "courses_id",
+                     "courses_avg"
+                 ],
+                 "ORDER":"courses_avg",
+                 "FORM":"TABLE"
+             }
+         }
         return f1.performQuery(q1).then(function(response:InsightResponse) {
             Log.test('Value: ' + response);
             expect(response["code"]).to.equal(200);
@@ -220,6 +298,32 @@ describe("Test1", function () {
         })
     });
 
+    it.only("not not 200", function () {
+        var f1 = new InsightFacade();
+            var q1 = {
+                "WHERE":{"NOT": {"NOT":
+        {"EQ":{
+                        "courses_avg":97
+                    }}}
+                },
+                "OPTIONS":{
+                    "COLUMNS":[
+                        "courses_dept",
+                        "courses_avg"
+                    ],
+                    "ORDER":"courses_avg",
+                    "FORM":"TABLE"
+                }
+            }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            Log.test(err);
+            console.log(err);
+            expect.fail();
+        })
+    });
     // it.only("removeDataset201", function () {
     //     var f1 = new InsightFacade();
     //     return f1.removeDataset("D2").then(function(response:InsightResponse) {
@@ -252,7 +356,31 @@ describe("Test1", function () {
         })
     });
 
-
-
+    it.only("no source 424", function () {
+        var f1 = new InsightFacade();
+        let q1:QueryRequest = {
+            "WHERE":{
+                "GT":{
+                    "courses_avg":97.6
+                }
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_fail"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(424);
+        }).catch(function (err) {
+            Log.test(err);
+            console.log(err);
+            expect.fail();
+        })
+    });
 
 });

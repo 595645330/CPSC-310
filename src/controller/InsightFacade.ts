@@ -1,6 +1,7 @@
 /**
  * This is the main programmatic entry point for the project.
  */
+
 import {IInsightFacade, InsightResponse, QueryRequest} from "./IInsightFacade";
 
 import Log from "../Util";

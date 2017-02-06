@@ -129,4 +129,8 @@ export interface IInsightFacade {
      *
      */
     performQuery(query: QueryRequest): Promise<InsightResponse>;
+
+    helper(tofilt: any, courses: any): any;
+
 }
+

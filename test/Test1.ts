@@ -38,26 +38,49 @@ describe("Test1", function () {
         return new Buffer(fs.readFileSync('courses.zip')).toString('base64');
     }
 
-    // it.only("addDatasetOld201", function () {
-    //     var f1 = new InsightFacade();
-    //     return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
-    //         Log.test('Value: ' + response.code);
-    //         expect(response["code"]).to.equal(201);
-    //     }).catch(function (err) {
-    //         Log.test(err);
-    //         expect.fail();
-    //     })
-    // });
+    it.only("addDatasetOld201", function () {
+        var f1 = new InsightFacade();
+        return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response.code);
+            expect(response["code"]).to.equal(201);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
-
-
-    // {"IS": {"courses_foo": "*d" }},
-    // {"IS": {"courses_instructor": "s*" }}
-    it.only("performQuery424", function () {
+    it.only("nested is 200", function () {
         var f1 = new InsightFacade();
         let q1:QueryRequest = {
             "WHERE": {
-                "AND": []
+                "IS": {"courses_instructor": "*ave*"}
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_instructor",
+                    "courses_avg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }
+
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            console.log(response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("wrong query 400", function () {
+        var f1 = new InsightFacade();
+        let q1:QueryRequest = {
+            "WHERE": {
+                "shih": []
             },
             "OPTIONS": {
                 "COLUMNS": [
@@ -80,7 +103,34 @@ describe("Test1", function () {
         })
     });
 
-    it.only("performQuery400", function () {
+
+    it.only("empty or 400", function () {
+        var f1 = new InsightFacade();
+        let q1:QueryRequest = {
+            "WHERE": {
+                "OR": []
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_instructor",
+                    "courses_avg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }
+
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            console.log(response);
+            expect(response["code"]).to.equal(400);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("wrongQuery400", function () {
         var f1 = new InsightFacade();
         let q1:QueryRequest = {
             "WHERE":21,
@@ -90,13 +140,13 @@ describe("Test1", function () {
             Log.test('Value: ' + response);
             expect(response["code"]).to.equal(400);
         }).catch(function (err) {
-            Log.test(err);
-            console.log("this is final err"+err);
+            Log.test(err.code);
+            console.log(err);
             expect.fail();
         })
     });
 
-    it.only("performQuery200", function () {
+    it.only("order not in colum 400", function () {
         var f1 = new InsightFacade();
         let q1:QueryRequest = {
             "WHERE":{
@@ -107,7 +157,7 @@ describe("Test1", function () {
             "OPTIONS":{
                 "COLUMNS":[
                     "courses_dept",
-                    "courses_avg"
+                    "courses_fail"
                 ],
                 "ORDER":"courses_avg",
                 "FORM":"TABLE"
@@ -117,15 +167,14 @@ describe("Test1", function () {
         return f1.performQuery(q1).then(function(response:InsightResponse) {
             Log.test('Value: ' + response);
             console.log(response);
-            expect(response["code"]).to.equal(200);
+            expect(response["code"]).to.equal(400);
         }).catch(function (err) {
-            Log.test("error"+err.code);
-            console.log("this err"+err);
+            console.log(err);
             expect.fail();
         })
     });
 
-    it.only("performQuery400complex", function () {
+    it.only("performQuery200complex", function () {
         var f1 = new InsightFacade();
         let q1:QueryRequest = {
             "WHERE":{
@@ -182,7 +231,26 @@ describe("Test1", function () {
     //     })
     // });
 
-
+    it.only("removeDataset201", function () {
+        var f1 = new InsightFacade();
+        return f1.removeDataset("courses").then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(204);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("removeDataset201", function () {
+        var f1 = new InsightFacade();
+        return f1.removeDataset("courses").then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(404);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
 
 

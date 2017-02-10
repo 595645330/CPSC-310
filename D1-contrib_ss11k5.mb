@@ -1,0 +1,16 @@
+Final Test: The AutoTest failed today. On Piazza the instructors say they will check it in the morning of
+Feb 6th. So We could not get our Pass Rate or Coverage for the Final Test of our final commit.
+
+My concrete contributions are that I wrote the PerformQuery part of the code, and also a Helper function to return a
+list of objects to put in the query results, and it can catch the errors and reject 400 error.
+I also wrote some unit tests for the function.
+
+links to my commits:
+https://github.com/CS310-2017Jan/cpsc310project_team80/commit/308a8008eeb516bc656ea9b4ca467cc0bf081281
+https://github.com/CS310-2017Jan/cpsc310project_team80/commit/5fa418a14b346e2a4f3ccfffdbf556148a8da5d7
+https://github.com/CS310-2017Jan/cpsc310project_team80/commit/1ff2e6b55823c08583480a8ce598dce398ea1f7c
+https://github.com/CS310-2017Jan/cpsc310project_team80/commit/35a45f48330313f7f44ad43eb41ea7bde78d7353
+
+Comment: At the beginning I tried to use a class Helper, and put helper function inside. However, I found that this is
+not neccessary at all, because the helper function is not very complicated, and passing errors between 2 classes causes
+type errors which are hard to debug. Next time I will try to avoid having too many classes.

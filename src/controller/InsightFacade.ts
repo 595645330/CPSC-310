@@ -103,7 +103,6 @@ export default class InsightFacade implements IInsightFacade {
             let listsOfColumn: any [] = [];
             let listOfCourses: any [] = [];
             let listOfUUID: any [] = [];
-
             if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
                 reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
                 throw new Error();
@@ -147,7 +146,6 @@ export default class InsightFacade implements IInsightFacade {
             if(Object.keys(option1)[1] === "ORDER"){
                 order = option1["ORDER"];
             }
-
             try{
                 fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
                     if (err) {

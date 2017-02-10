@@ -38,16 +38,35 @@ describe("Test1", function () {
         return new Buffer(fs.readFileSync('courses.zip')).toString('base64');
     }
 
+
     // it.only("addDatasetOld201", function () {
     //     var f1 = new InsightFacade();
     //     return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response.code);
     //         expect(response["code"]).to.equal(201);
+
     //     }).catch(function (err) {
     //         console.log(err);
     //         expect.fail();
     //     })
     // });
+    it.only("wrong column content 400", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {"courses_instructor": "*ave*"}
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_instructor",
+                    "courses_avggfgfg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }});
+
 
     it.only("simple query EQ 200", function () {
         var f1 = new InsightFacade();
@@ -170,22 +189,16 @@ describe("Test1", function () {
                 "ORDER": "courses_avg",
                 "FORM": "TABLE"
             }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            console.log(response);
-            expect.fail();
-        }).catch(function (err) {
-            console.log(err);
-            expect(err["code"]).to.equal(400);
-        })
-    });
+        }});
+
+
 
     // it.only("wrong query 400", function () {
     //     var f1 = new InsightFacade();
     //     let q1:QueryRequest = {
     //         "WHERE": {
     //             "shih": []
+
     //         },
     //         "OPTIONS": {
     //             "COLUMNS": [
@@ -197,15 +210,18 @@ describe("Test1", function () {
     //         }
     //
     //     }
+
     //     return f1.performQuery(q1).then(function(response:InsightResponse) {
     //         Log.test('Value: ' + response);
     //         console.log(response);
+
     //         expect.fail();
     //     }).catch(function (err) {
     //         console.log(err);
     //         expect(err["code"]).to.equal(400);
     //     })
     // });
+
     //
     //
     it.only("empty or 400", function () {
@@ -232,6 +248,7 @@ describe("Test1", function () {
             expect(err["code"]).to.equal(400);
         })
     });
+
 
     it.only("wrongQuery400", function () {
         var f1 = new InsightFacade();
@@ -270,10 +287,15 @@ describe("Test1", function () {
         return f1.performQuery(q1).then(function(response:InsightResponse) {
             Log.test('Value: ' + response);
             console.log(response);
+
             expect(response["code"]).to.equal(200);
         }).catch(function (err) {
             console.log(err);
+
             expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
         })
     });
     //
@@ -497,4 +519,6 @@ describe("Test1", function () {
     //     })
     // });
 
+
 });
+

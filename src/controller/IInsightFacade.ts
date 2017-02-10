@@ -97,7 +97,7 @@ export interface IInsightFacade {
      * The promise should return an InsightResponse for both fulfill and reject.
      *
      * Fulfill should be for 2XX codes and reject for everything else.
-     *
+     * /
      * This will delete both disk and memory caches for the dataset for the id meaning
      * that subsequent queries for that id should fail unless a new addDataset happens first.
      *

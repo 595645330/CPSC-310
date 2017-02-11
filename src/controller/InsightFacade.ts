@@ -1,3 +1,4 @@
+
 /**
  * This is the main programmatic entry point for the project.
  */
@@ -5,6 +6,7 @@ import {IInsightFacade, InsightResponse, QueryRequest} from "./IInsightFacade";
 
 import Log from "../Util";
 import Helper from "./Helper";
+import {isUndefined} from "util";
 
 export default class InsightFacade implements IInsightFacade {
 
@@ -22,7 +24,7 @@ export default class InsightFacade implements IInsightFacade {
             let lists:any [] = [];
             var new_zip = new JSZip();
             let response:InsightResponse;
-
+            if (content === null || id === null || isUndefined(content) || isUndefined(id)){reject({"code":400,"body":{"error": "my text"}})}
             new_zip.loadAsync(content, {base64: true}).then(function(zip:JSZip){
                 let files:any= zip.files;
                 for(let key of Object.keys(files)){
@@ -99,10 +101,15 @@ export default class InsightFacade implements IInsightFacade {
             var fs = require("fs");
             var JSZip = require("jszip");
             let output: any = {};
-            let order: any = {};
+            let order: any = "";
             let listsOfColumn: any [] = [];
             let listOfCourses: any [] = [];
             let listOfUUID: any [] = [];
+            // duke
+            // try {fs.readFileSync('courses.txt',"utf-8").toString()}
+            // catch(err) {reject({"code":424,"body":{"missing": ["courses"]}});}
+
+
             if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
                 reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
                 throw new Error();
@@ -115,7 +122,7 @@ export default class InsightFacade implements IInsightFacade {
                 throw new Error();
             }
             if (!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
-            &&!(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
+                && !(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
                 reject({"code":400,"body":{"error": "OPTIONS wrong"}});
                 throw new Error();
             }
@@ -138,18 +145,27 @@ export default class InsightFacade implements IInsightFacade {
                 reject({"code":400,"body":{"error": "FORM not TABLE"}});
                 throw new Error();
             }
-            if (Object.keys(option1)[1] === "ORDER"&& !(option1["ORDER"] ==="courses_avg") && !(option1["ORDER"] ==="courses_pass") && !(option1["ORDER"] ==="courses_fail") &&!(option1["ORDER"] ==="courses_audit")){
-                reject({"code":400,"body":{"error": "Invalid ORDER"}});
-                throw new Error();
-            }
+            // if (Object.keys(option1)[1] === "ORDER"&& !(option1["ORDER"] ==="courses_avg") && !(option1["ORDER"] ==="courses_pass") && !(option1["ORDER"] ==="courses_fail") &&!(option1["ORDER"] ==="courses_audit")){
+            //     reject({"code":400,"body":{"error": "Invalid ORDER"}});
+            //     throw new Error();
+            // }
+
             output.render = option1["FORM"];
             if(Object.keys(option1)[1] === "ORDER"){
                 order = option1["ORDER"];
             }
+
+            if (!(listsOfColumn.includes(order)) && (order!=="")) {
+                console.log("here");
+                reject({"code":400,"body":{"error": "order not in column"}});
+                throw new Error();
+
+            }
             try{
                 fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
                     if (err) {
-                        throw err;
+                        reject({"code":424,"body":{"missing": ["courses"]}})
+                        throw new Error();
                     }
                     try {
                         data = JSON.parse(data);
@@ -169,12 +185,25 @@ export default class InsightFacade implements IInsightFacade {
                         for (let column of listsOfColumn) {
                             course[column] = uuid[column];
                         }
-                       listOfCourses.push(course);
+                        listOfCourses.push(course);
                     }
-                    if(order!=={}){
-                        listOfCourses.sort(function (a, b) {
-                            return a[order] - b[order];
-                        });
+                    if(order!==""){
+                        if((option1["ORDER"] ==="courses_avg") ||(option1["ORDER"] ==="courses_pass") ||(option1["ORDER"] ==="courses_fail") ||(option1["ORDER"] ==="courses_audit")) {
+                            listOfCourses.sort(function (a, b) {
+                                return a[order] - b[order];
+                            });
+                        }
+                        else if((option1["ORDER"] ==="courses_dept") ||(option1["ORDER"] ==="courses_id") ||(option1["ORDER"] ==="courses_instructor") ||(option1["ORDER"] ==="courses_uuid")||(option1["ORDER"] ==="courses_title")){
+                            listOfCourses.sort(function(a, b){
+                                if(a[order] < b[order]) return -1;
+                                if(a[order] > b[order]) return 1;
+                                return 0;
+                            })
+                        }
+                        else{
+                            reject({"code":400,"body":{"error": "order wrong"}});
+                            throw new Error();
+                        }
                     }
                     output.result = listOfCourses;
                     fulfill({"code": 200, "body": output});

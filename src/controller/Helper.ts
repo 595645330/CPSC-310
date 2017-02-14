@@ -387,6 +387,7 @@ export default class Helper{
 
     CompareNum(where1:any,data:any):any {
         let listOfUUID: any [] = [];
+        let listOfUUID2: any [] = data;
         if (Object.keys(where1)[0] === 'GT') {
             let key1: any = where1["GT"];
             var helper = new Helper();
@@ -444,16 +445,12 @@ export default class Helper{
             var helper = new Helper();
             for(let k of key1){
                 try{
-                    listOfUUID.push(helper.CompareNum(k,data));
+                    listOfUUID2=helper.CompareNum(k,listOfUUID2)
                 }catch (err){
                     throw new Error();
                 }
             }
-            listOfUUID = listOfUUID.shift().filter(function(v:any) {
-                return listOfUUID.every(function(a) {
-                    return a.indexOf(v) !== -1;
-                });
-            });
+            listOfUUID=listOfUUID2;
         }
         else if (Object.keys(where1)[0]==='OR'){
             let key1:any=where1["OR"];

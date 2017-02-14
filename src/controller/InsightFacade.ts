@@ -24,7 +24,11 @@ export default class InsightFacade implements IInsightFacade {
             let lists:any [] = [];
             var new_zip = new JSZip();
             let response:InsightResponse;
-            if (content === null || id === null || isUndefined(content) || isUndefined(id)){reject({"code":400,"body":{"error": "my text"}})}
+            if (content === null || id === null || isUndefined(content) || isUndefined(id)){
+                reject({"code":400,"body":{"error": "my text"}});
+                throw new Error();
+            }
+
             new_zip.loadAsync(content, {base64: true}).then(function(zip:JSZip){
                 let files:any= zip.files;
                 for(let key of Object.keys(files)){
@@ -53,6 +57,9 @@ export default class InsightFacade implements IInsightFacade {
                                 }
                             }
                         }
+                    }
+                    if (lists.length === 0) {
+                        throw new Error();
                     }
                     try {
                         fs.accessSync(id + '.txt');
@@ -105,10 +112,9 @@ export default class InsightFacade implements IInsightFacade {
             let listsOfColumn: any [] = [];
             let listOfCourses: any [] = [];
             let listOfUUID: any [] = [];
-            // duke
-            // try {fs.readFileSync('courses.txt',"utf-8").toString()}
-            // catch(err) {reject({"code":424,"body":{"missing": ["courses"]}});}
 
+            try {fs.readFileSync('courses.txt',"utf-8").toString()}
+            catch(err) {reject({"code":424,"body":{"missing": ["courses"]}});}
 
             if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
                 reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
@@ -133,6 +139,7 @@ export default class InsightFacade implements IInsightFacade {
             for (let a of option1["COLUMNS"]) {
                 listsOfColumn.push(a);
             }
+            //------------------------------------------------------------------
             for (let loc of listsOfColumn) {
                 if (!(loc==="courses_dept") && !(loc==="courses_id")
                     && !(loc ==="courses_avg") && !(loc === "courses_instructor") && !(loc==="courses_title")
@@ -145,22 +152,16 @@ export default class InsightFacade implements IInsightFacade {
                 reject({"code":400,"body":{"error": "FORM not TABLE"}});
                 throw new Error();
             }
-            // if (Object.keys(option1)[1] === "ORDER"&& !(option1["ORDER"] ==="courses_avg") && !(option1["ORDER"] ==="courses_pass") && !(option1["ORDER"] ==="courses_fail") &&!(option1["ORDER"] ==="courses_audit")){
-            //     reject({"code":400,"body":{"error": "Invalid ORDER"}});
-            //     throw new Error();
-            // }
-
             output.render = option1["FORM"];
             if(Object.keys(option1)[1] === "ORDER"){
                 order = option1["ORDER"];
             }
 
             if (!(listsOfColumn.includes(order)) && (order!=="")) {
-                console.log("here");
                 reject({"code":400,"body":{"error": "order not in column"}});
                 throw new Error();
-
             }
+            //--------------------------------------------------------------------
             try{
                 fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
                     if (err) {

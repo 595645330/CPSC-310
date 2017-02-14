@@ -64,6 +64,7 @@ export default class InsightFacade implements IInsightFacade {
                     try {
                         fs.accessSync(id + '.txt');
                         response={"code":201,"body":{}};
+                        fulfill(response)
                     }catch(err){
                         response={"code":204,"body":{}};
                         fs.writeFile(id+'.txt', JSON.stringify(lists), (err: any) => {
@@ -73,7 +74,7 @@ export default class InsightFacade implements IInsightFacade {
                             fulfill(response);
                         });
                     }
-                    fulfill(response)
+
                 }).catch(function(err:any) {
                     reject({"code":400,"body":{"error":"the operation was unsuccessful because the delete was for a resource that was not previously added."}})
                 });
@@ -171,7 +172,7 @@ export default class InsightFacade implements IInsightFacade {
                     try {
                         data = JSON.parse(data);
                     }catch(err) {
-                        reject({"code": 400, "body": {"missing": ["courses"]}});
+                        reject({"code": 424, "body": {"missing": ["courses"]}});
                     }
                     let helper = new Helper();
 

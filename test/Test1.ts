@@ -43,7 +43,7 @@ describe("Test1", function () {
         return new Buffer(fs.readFileSync('empty.zip')).toString('base64');
     }
 
-    it.only("addDatasetNew200", function () {
+    it.only("addDatasetNew204", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
             Log.test('Value: ' + response.code);
@@ -85,6 +85,31 @@ describe("Test1", function () {
             "OPTIONS": {
                 "COLUMNS": [
                     "courses_audit",
+                    "courses_avg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Dept 200", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {"courses_dept": "cpsc"}
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_dept",
                     "courses_avg"
                 ],
                 "ORDER": "courses_avg",
@@ -402,7 +427,7 @@ describe("Test1", function () {
     //     var f1 = new InsightFacade();
     //     var q1 = {
     //         "WHERE":{
-    //             "OR":[
+    //             "NOT":[
     //                 {
     //                     "AND":[
     //                         {
@@ -443,7 +468,7 @@ describe("Test1", function () {
     //         expect.fail();//
     //     })
     // });
-    //
+
     it.only("not not 200", function () {
         var f1 = new InsightFacade();
         var q1 = {
@@ -515,85 +540,85 @@ describe("Test1", function () {
     //         expect.fail();
     //     })
     // });
-    // it.only("AND AND 200", function () {
-    //     var f1 = new InsightFacade();
-    //     var q1 = {
-    //         "WHERE":{
-    //             "AND":[
-    //                 {
-    //                     "AND": [
-    //                         {
-    //                             "GT": {
-    //                                 "courses_avg": 78
-    //                             }
-    //                         },
-    //                         {
-    //                             "LT": {
-    //                                 "courses_avg": 85
-    //                             }
-    //                         }]
-    //                 },
-    //                 {
-    //                     "LT":{
-    //                         "courses_avg":80
-    //                     }
-    //                 }
-    //             ]
-    //         },
-    //         "OPTIONS":{
-    //             "COLUMNS":[
-    //                 "courses_dept",
-    //                 "courses_id",
-    //                 "courses_avg"
-    //             ],
-    //             "ORDER":"courses_avg",
-    //             "FORM":"TABLE"
-    //         }
-    //     }
-    //     return f1.performQuery(q1).then(function(response:InsightResponse) {
-    //         Log.test('Value: ' + response);
-    //         expect(response["code"]).to.equal(200);
-    //     }).catch(function (err) {
-    //         console.log(err);
-    //         expect.fail();
-    //     })
-    // });
-    //
-    // it.only("AND 200", function () {
-    //     var f1 = new InsightFacade();
-    //     var q1 = {
-    //         "WHERE":
-    //                 {
-    //                     "AND": [
-    //                         {
-    //                             "GT": {
-    //                                 "courses_avg": 78
-    //                             }
-    //                         },
-    //                         {
-    //                             "LT": {
-    //                                 "courses_avg": 85
-    //                             }
-    //                         }]
-    //                 },
-    //         "OPTIONS":{
-    //             "COLUMNS":[
-    //                 "courses_dept",
-    //                 "courses_id",
-    //                 "courses_avg"
-    //             ],
-    //             "ORDER":"courses_avg",
-    //             "FORM":"TABLE"
-    //         }
-    //     }
-    //     return f1.performQuery(q1).then(function(response:InsightResponse) {
-    //         Log.test('Value: ' + response);
-    //         expect(response["code"]).to.equal(200);
-    //     }).catch(function (err) {
-    //         console.log(err);
-    //         expect.fail();
-    //     })
-    // });
+    it.only("AND AND 200", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE":{
+                "AND":[
+                    {
+                        "AND": [
+                            {
+                                "GT": {
+                                    "courses_avg": 78
+                                }
+                            },
+                            {
+                                "LT": {
+                                    "courses_avg": 85
+                                }
+                            }]
+                    },
+                    {
+                        "LT":{
+                            "courses_avg":80
+                        }
+                    }
+                ]
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("AND 200", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE":
+                    {
+                        "AND": [
+                            {
+                                "GT": {
+                                    "courses_avg": 78
+                                }
+                            },
+                            {
+                                "LT": {
+                                    "courses_avg": 85
+                                }
+                            }]
+                    },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
     it.only("OR OR 200", function () {
         var f1 = new InsightFacade();

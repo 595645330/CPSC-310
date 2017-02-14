@@ -199,10 +199,10 @@ export default class Helper{
                 if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['courses_dept']) {
                     listOfUUID.push(i);
                 }
-                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_dept'].slice(0, key2.length - 1)) {
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_dept'].slice(0, key2.length - 1)) {
                     listOfUUID.push(i);
                 }
-                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_dept'].slice(i['courses_dept'].length - key2.length + 1, i['courses_dept'].length)) {
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_dept'].slice(i['courses_dept'].length - key2.length + 1, i['courses_dept'].length)) {
                     listOfUUID.push(i);
                 }
                 else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['courses_dept'].includes(key2.slice(1, key2.length - 1))) {
@@ -219,10 +219,10 @@ export default class Helper{
                 if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['courses_id']) {
                     listOfUUID.push(i);
                 }
-                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_id'].slice(0, key2.length - 1)) {
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_id'].slice(0, key2.length - 1)) {
                     listOfUUID.push(i);
                 }
-                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_id'].slice(i['courses_id'].length - key2.length + 1, i['courses_id'].length)) {
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_id'].slice(i['courses_id'].length - key2.length + 1, i['courses_id'].length)) {
                     listOfUUID.push(i);
                 }
                 else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['courses_id'].includes(key2.slice(1, key2.length - 1))) {
@@ -239,10 +239,10 @@ export default class Helper{
                 if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['courses_instructor']) {
                     listOfUUID.push(i);
                 }
-                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_instructor'].slice(0, key2.length - 1)) {
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_instructor'].slice(0, key2.length - 1)) {
                     listOfUUID.push(i);
                 }
-                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_instructor'].slice(i['courses_instructor'].length - key2.length + 1, i['courses_instructor'].length)) {
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_instructor'].slice(i['courses_instructor'].length - key2.length + 1, i['courses_instructor'].length)) {
                     listOfUUID.push(i);
                 }
                 else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['courses_instructor'].includes(key2.slice(1, key2.length - 1))) {
@@ -259,10 +259,10 @@ export default class Helper{
                 if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['courses_title']) {
                     listOfUUID.push(i);
                 }
-                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_title'].slice(0, key2.length - 1)) {
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length -1) === i['courses_title'].slice(0, key2.length - 1)) {
                     listOfUUID.push(i);
                 }
-                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_title'].slice(i['courses_title'].length - key2.length + 1, i['courses_title'].length)) {
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_title'].slice(i['courses_title'].length - key2.length + 1, i['courses_title'].length)) {
                     listOfUUID.push(i);
                 }
                 else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['courses_title'].includes(key2.slice(1, key2.length - 1))) {
@@ -279,10 +279,10 @@ export default class Helper{
                 if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['courses_uuid']) {
                     listOfUUID.push(i);
                 }
-                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_uuid'].slice(0, key2.length - 1)) {
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_uuid'].slice(0, key2.length - 1)) {
                     listOfUUID.push(i);
                 }
-                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['courses_uuid'].slice(i['courses_uuid'].length - key2.length + 1, i['courses_uuid'].length)) {
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['courses_uuid'].slice(i['courses_uuid'].length - key2.length + 1, i['courses_uuid'].length)) {
                     listOfUUID.push(i);
                 }
                 else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['courses_uuid'].includes(key2.slice(1, key2.length - 1))) {
@@ -301,51 +301,51 @@ export default class Helper{
         var helper = new Helper();
         if(Object.keys(key1)[0] === 'LT'){
             try{
-            listOfUUID=listOfUUID.concat(helper.Greater(key1["LT"],data));
-            listOfUUID=listOfUUID.concat(helper.Equalto(key1["LT"],data));
-        }catch (err){
-            throw new Error();
-        }
+                listOfUUID=listOfUUID.concat(helper.Greater(key1["LT"],data));
+                listOfUUID=listOfUUID.concat(helper.Equalto(key1["LT"],data));
+            }catch (err){
+                throw new Error();
+            }
             listOfUUID = listOfUUID.filter(function(elem, index, self) {
                 return index == self.indexOf(elem);
             })
         }
         else if(Object.keys(key1)[0] === 'GT'){
             try{
-            listOfUUID=listOfUUID.concat(helper.Lessthan(key1["GT"],data));
-            listOfUUID=listOfUUID.concat(helper.Equalto(key1["GT"],data));
-        }catch (err){
-            throw new Error();
-        }
+                listOfUUID=listOfUUID.concat(helper.Lessthan(key1["GT"],data));
+                listOfUUID=listOfUUID.concat(helper.Equalto(key1["GT"],data));
+            }catch (err){
+                throw new Error();
+            }
             listOfUUID = listOfUUID.filter(function(elem, index, self) {
                 return index == self.indexOf(elem);
             })
         }
         else if(Object.keys(key1)[0] === 'EQ'){
             try{
-            listOfUUID=listOfUUID.concat(helper.Greater(key1["EQ"],data));
-            listOfUUID=listOfUUID.concat(helper.Lessthan(key1["EQ"],data));
-        }catch (err){
-            throw new Error();
-        }
+                listOfUUID=listOfUUID.concat(helper.Greater(key1["EQ"],data));
+                listOfUUID=listOfUUID.concat(helper.Lessthan(key1["EQ"],data));
+            }catch (err){
+                throw new Error();
+            }
             listOfUUID = listOfUUID.filter(function(elem, index, self) {
                 return index == self.indexOf(elem);
             })
         }
         else if(Object.keys(key1)[0] === 'NOT'){
             try{
-            listOfUUID=helper.CompareNum(key1['NOT'],data);
-        }catch (err){
-            throw new Error();
-        }
+                listOfUUID=helper.CompareNum(key1['NOT'],data);
+            }catch (err){
+                throw new Error();
+            }
         }
         else if(Object.keys(key1)[0] === 'AND'){
             for(let k of key1["AND"]){
                 try{
-                listOfUUID=listOfUUID.concat(helper.Notto(k,data));
-            }catch (err){
-                throw new Error();
-            }
+                    listOfUUID=listOfUUID.concat(helper.Notto(k,data));
+                }catch (err){
+                    throw new Error();
+                }
             }
             listOfUUID = listOfUUID.filter(function(elem, index, self) {
                 return index == self.indexOf(elem);
@@ -354,10 +354,10 @@ export default class Helper{
         else if(Object.keys(key1)[0] === 'OR'){
             for(let k of key1["OR"]){
                 try{
-                listOfUUID.push(helper.Notto(k,data));
-            }catch (err){
-                throw new Error();
-            }
+                    listOfUUID.push(helper.Notto(k,data));
+                }catch (err){
+                    throw new Error();
+                }
             }
             listOfUUID = listOfUUID.shift().filter(function(v:any) {
                 return listOfUUID.every(function(a) {
@@ -478,7 +478,4 @@ export default class Helper{
 
         return listOfUUID;
     }
-
-
-
 }

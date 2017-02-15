@@ -162,6 +162,14 @@ export default class InsightFacade implements IInsightFacade {
                 reject({"code":400,"body":{"error": "order not in column"}});
                 throw new Error();
             }
+            //-------------duke 424 ----------
+            let helperb = new Helper();
+            if (helperb.check(where1)) {
+                reject({"code":424,"body":{"missing": ["courses"]}});
+                throw new Error();
+            }
+
+            //------------duke 424 -----------
             //--------------------------------------------------------------------
             try{
                 fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
@@ -172,8 +180,10 @@ export default class InsightFacade implements IInsightFacade {
                     try {
                         data = JSON.parse(data);
                     }catch(err) {
-                        reject({"code": 424, "body": {"missing": ["courses"]}});
+                        reject({"code": 400, "body": {"missing": ["courses"]}});
                     }
+
+
                     let helper = new Helper();
 
                     try{

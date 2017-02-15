@@ -475,4 +475,52 @@ export default class Helper{
 
         return listOfUUID;
     }
+
+    check(tofilt: any): boolean {
+        let that = this;
+        if ("LT" == Object.keys(tofilt)[0]) {
+            var lt = tofilt["LT"];
+            let ltkey: string = Object.keys(lt)[0];
+            if (!(ltkey.slice(0, 8) === "courses_")) {return true;}
+        }
+
+        else if ("GT" == Object.keys(tofilt)[0]) {
+            var gt = tofilt["GT"];
+            let gtkey: string = Object.keys(gt)[0];
+            if (!(gtkey.slice(0, 8) === "courses_")) {return true;}
+        }
+
+        else if ("EQ" == Object.keys(tofilt)[0]) {
+            var eq = tofilt["EQ"];
+            let eqkey: string = Object.keys(eq)[0];
+            if (!(eqkey.slice(0, 8) === "courses_")) {return true;}
+        }
+
+        else if ("IS" == Object.keys(tofilt)[0]) {
+            var is = tofilt["IS"];
+            let iskey: string = Object.keys(is)[0];
+            if (!(iskey.slice(0, 8) === "courses_")) {return true;}
+        }
+
+        else if ("AND" == Object.keys(tofilt)[0]) {
+            let and: any[] = tofilt["AND"];
+            for (let i of and) {
+                if (that.check(i)){return true;;}
+            }
+        }
+
+
+        else if ("OR" == Object.keys(tofilt)[0]) {
+            let or: any[] = tofilt["OR"];
+            for (let i of or) {
+                if (that.check(i)){return true;}
+            }
+        }
+
+        else if ("NOT" == Object.keys(tofilt)[0]) {
+            var not = tofilt["NOT"];
+            if (that.check(not)) {return true;}
+        }
+        return false;
+    }
 }

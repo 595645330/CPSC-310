@@ -7,6 +7,7 @@ import {IInsightFacade, InsightResponse, QueryRequest} from "./IInsightFacade";
 import Log from "../Util";
 import Helper from "./Helper";
 import {isUndefined} from "util";
+import {stringify} from "querystring";
 
 export default class InsightFacade implements IInsightFacade {
 
@@ -44,6 +45,7 @@ export default class InsightFacade implements IInsightFacade {
                             if (obs!== undefined && obs.length !== 0) {
                                 for(let ob of obs){
                                     //console.log(ob);
+                                    var tos = (ob["id"]).toString();
                                     var obj={"courses_dept":ob["Subject"],
                                         "courses_id":ob["Course"],
                                         "courses_avg":ob["Avg"],
@@ -52,7 +54,7 @@ export default class InsightFacade implements IInsightFacade {
                                         "courses_pass":ob["Pass"],
                                         "courses_fail":ob["Fail"],
                                         "courses_audit":ob["Audit"],
-                                        "courses_uuid":ob["id"] };
+                                        "courses_uuid":tos };
                                     lists.push(obj);
                                 }
                             }
@@ -173,10 +175,7 @@ export default class InsightFacade implements IInsightFacade {
             //--------------------------------------------------------------------
             try{
                 fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
-                    if (err) {
-                        reject({"code":424,"body":{"missing": ["courses"]}})
-                        throw new Error();
-                    }
+
                     try {
                         data = JSON.parse(data);
                     }catch(err) {
@@ -219,10 +218,8 @@ export default class InsightFacade implements IInsightFacade {
                     }
                     output.result = listOfCourses;
                     fulfill({"code": 200, "body": output});
-                    console.log(output);
                 });
             }catch(err) {
-                reject({"code":424,"body":{"error":"the operation was unsuccessful because the delete was for a resource that was not previously added."}});
             }
         });
     }

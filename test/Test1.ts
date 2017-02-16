@@ -33,6 +33,76 @@ describe("Test1", function () {
         Log.test('AfterTest: ' + (<any>this).currentTest.title);
     });
 
+    let server:Server = null;
+    server = new Server(3000);
+
+    it.only("server off", function () {
+        return server.stop().then(function (torf: boolean) {
+            console.log("torf"+torf);
+            expect(torf === true);
+        }).catch(function (err) {
+            console.log(err);
+        })
+    });
+
+    it.only("server on", function () {
+        return server.start().then(function (torf: boolean) {
+            console.log("torf"+torf);
+            expect(torf === true);
+        }).catch(function (err) {
+            console.log(err);
+        })
+    });
+
+    it.only("server off after on", function () {
+        return server.stop().then(function (torf: boolean) {
+            console.log("torf"+torf);
+            expect(torf === true);
+        }).catch(function (err) {
+            console.log(err);
+        })
+    });
+
+    it.only("server 400 for null echo", function () {
+        var echo = Server.performEcho(null);
+        sanityCheck(echo);
+        expect(echo.code === 400);
+    });
+
+    it.only("Should be able to echo", function () {
+        let out = Server.performEcho('echo');
+        Log.test(JSON.stringify(out));
+        sanityCheck(out);
+        expect(out.code).to.equal(200);
+        expect(out.body).to.deep.equal({message: 'echo...echo'});
+    });
+
+    it.only("Should be able to echo silence", function () {
+        let out = Server.performEcho('');
+        Log.test(JSON.stringify(out));
+        sanityCheck(out);
+        expect(out.code).to.equal(200);
+        expect(out.body).to.deep.equal({message: '...'});
+    });
+
+    it.only("Should be able to handle a missing echo message sensibly", function () {
+        let out = Server.performEcho(undefined);
+        Log.test(JSON.stringify(out));
+        sanityCheck(out);
+        expect(out.code).to.equal(400);
+        expect(out.body).to.deep.equal({error: 'Message not provided'});
+    });
+
+    it.only("Should be able to handle a null echo message sensibly", function () {
+        let out = Server.performEcho(null);
+        Log.test(JSON.stringify(out));
+        sanityCheck(out);
+        expect(out.code).to.equal(400);
+        expect(out.body).to.have.property('error');
+        expect(out.body).to.deep.equal({error: 'Message not provided'});
+    });
+
+
     function getBase64() {
         var fs = require("fs");
         return new Buffer(fs.readFileSync('courses.zip')).toString('base64');
@@ -75,6 +145,16 @@ describe("Test1", function () {
             expect(err["code"]).to.equal(400);
         })
     });
+    it.only("addDataset400 null content", function () {
+        var f1 = new InsightFacade();
+        return f1.addDataset("courses",null).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response.code);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
 
     it.only("EQ audit 200", function () {
         var f1 = new InsightFacade();
@@ -98,6 +178,51 @@ describe("Test1", function () {
         }).catch(function (err) {
             console.log(err);
             expect.fail();
+        })
+    });
+
+    it.only("line 400", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "AND" : [
+                    {"EQ": {"courses_audit": 0}},
+                    {"EQ": {"courses_avg": 90}},
+                    {"EQ": {"courses_fail": 10}},
+                    {"EQ": {"courses_pass": 100}},
+                    {"GT": {"courses_audit": 0}},
+                    {"GT": {"courses_avg": 90}},
+                    {"GT": {"courses_fail": 10}},
+                    {"GT": {"courses_pass": 100}},
+                    {"LT": {"courses_audit": 0}},
+                    {"LT": {"courses_avg": 90}},
+                    {"LT": {"courses_fail": 10}},
+                    {"LT": {"courses_pass": 100}},
+                    {"IS": {"courses_dept": "adhe"}},
+                    {"IS": {"courses_id": "101"}},
+                    {"IS": {"courses_instructor": "*ave"}},
+                    {"IS": {"courses_title": "blah"}},
+                    {"IS": {"courses_uuid": "blah"}},
+                    {"GT": 2121},
+                    {"GT": {"courses_avg": "21"}}
+        ]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_audit",
+                    "courses_avg"
+                ],
+                "ORDER": "courses_avg",
+                "FORM": "TABLE"
+            }
+
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
         })
     });
 
@@ -620,7 +745,7 @@ describe("Test1", function () {
         })
     });
 
-    it.only("OR OR 200", function () {
+    it.only("missing source 424", function () {
         var f1 = new InsightFacade();
         var q1 = {
             "WHERE":{
@@ -629,18 +754,63 @@ describe("Test1", function () {
                         "OR": [
                             {
                                 "GT": {
-                                    "courses_avg": 78
+                                    "ty_avg": 78
                                 }
                             },
                             {
                                 "LT": {
-                                    "courses_avg": 85
+                                    "ty_avg": 85
                                 }
                             }]
                     },
                     {
                         "LT":{
                             "courses_avg":80
+                        }
+                    }
+                ]
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(424);
+        })
+    });
+
+    it.only("nested AND 200", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE":{
+                "AND":[
+                    {
+                        "AND":[
+                            {
+                                "GT":{
+                                    "courses_avg":90
+                                }
+                            },
+                            {
+                                "IS":{
+                                    "courses_dept":"adhe"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "EQ":{
+                            "courses_avg":95
                         }
                     }
                 ]
@@ -664,7 +834,7 @@ describe("Test1", function () {
         })
     });
 
-    it.only("nested AND 200", function () {
+    it.only("complex 200", function () {
         var f1 = new InsightFacade();
         var q1 = {
             "WHERE":{
@@ -709,13 +879,13 @@ describe("Test1", function () {
         })
     });
 
-    it.only("not 200", function () {
+    it.only("not not 200", function () {
         var f1 = new InsightFacade();
         var q1 = {
-            "WHERE": {"NOT":
+            "WHERE": {"NOT": {"NOT":
                 {"LT":{
                     "courses_avg":97
-                }}
+                }}}
             },
             "OPTIONS":{
                 "COLUMNS":[
@@ -733,6 +903,211 @@ describe("Test1", function () {
             Log.test(err);
             console.log(err);
             expect.fail();
+        })
+    });
+
+    it.only("not 400", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {"AND": [{"NOT":
+                {"EQ":{
+                    "courses_avg":97
+                }}
+            },
+                {"NOT":
+                    {"IS":{
+                        "courses_dept":"adhe"
+                    }}
+                },
+                {"NOT":
+                    {"LT":{
+                        "courses_avg":97
+                    }}
+                },
+                {"NOT":
+                    {"AND":
+                        [{"LT":{
+                            "courses_avg":97
+                        }}]}
+                },
+                {"NOT":
+                    {"OR":
+                        [{"LT":{
+                            "courses_avg":97
+                        }}]}
+                },
+                {"NOT":
+                    {"AND":
+                        [{"LT":{
+                            "courses_avg":"g"
+                        }}]}
+                }
+                ]},
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            Log.test(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+
+    it.only("is 200", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {"OR": [
+                {"IS":{
+                    "courses_title":"*soc*"
+                }},
+                {"IS":{
+                    "courses_uuid":"*306"
+                }},
+                {"IS":{
+                    "courses_uuid":"306*"
+                }},
+
+                {"IS":{
+                    "courses_id":"*510"
+                }},
+                {"IS":{
+                    "courses_id":"510*"
+                }},
+                {"IS":{
+                    "courses_uuid":"*06*"
+                }}
+            ]},
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            expect(err["code"]).to.equal(400);
+        })
+    });
+
+    it.only("is 200 second", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {"OR": [
+                {"IS":{
+                "courses_dept":"adhe"
+            }},
+                {"IS":{
+                    "courses_id":"510"
+                }},
+                {"IS":{
+                    "courses_instructor":"dave"
+                }},
+                {"IS":{
+                    "courses_title":"iss"
+                }},
+                {"IS":{
+                    "courses_uuid":"30668"
+                }},
+                {"IS":{
+                    "courses_dept":"*adhe"
+                }},
+                {"IS":{
+                    "courses_dept":"adhe*"
+                }},
+                {"IS":{
+                    "courses_dept":"*dhe*"
+                }},
+                {"IS":{
+                    "courses_instructor":"*dave"
+                }},
+                {"IS":{
+                    "courses_instructor":"dave*"
+                }},
+                {"IS":{
+                    "courses_instructor":"*ave*"
+                }},
+                {"IS":{
+                    "courses_title":"*iss"
+                }},
+                {"IS":{
+                    "courses_title":"fst*"
+                }},
+                // {"IS":{
+                //     "courses_title":"*soc*"
+                // }},
+                // {"IS":{
+                //     "courses_uuid":"*306"
+                // }},
+                // {"IS":{
+                //     "courses_uuid":"306*"
+                // }},
+                // {"IS":{
+                //     "courses_uuid":"*306*"
+                // }},
+                // {"IS":{
+                //     "courses_id":"*510"
+                // }},
+                // {"IS":{
+                //     "courses_id":"510*"
+                // }},
+                {"IS":{
+                    "courses_id":"*510*"
+                }}
+            ]},
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("not lt400", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {"NOT":
+                {"GT":{
+                    "courses_avg":"ss"
+                }}
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_avg"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            Log.test(err);
+            expect(err["code"]).to.equal(400);
+
         })
     });
 

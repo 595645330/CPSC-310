@@ -33,6 +33,7 @@ describe("Test1", function () {
         Log.test('AfterTest: ' + (<any>this).currentTest.title);
     });
 
+
     let server:Server = null;
     server = new Server(3000);
 
@@ -201,7 +202,7 @@ describe("Test1", function () {
             Log.test('Value: ' + response);
             expect.fail();
         }).catch(function (err) {
-            console.log(err);
+            Log.warn("error happened");
             expect(err["code"]).to.equal(400);
         })
     });
@@ -223,6 +224,7 @@ describe("Test1", function () {
             expect.fail();
         }).catch(function (err) {
             console.log(err);
+            Log.error("error here");
             expect(err["code"]).to.equal(400);
         })
     });

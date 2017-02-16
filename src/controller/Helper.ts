@@ -6,13 +6,11 @@ export default class Helper{
     Greater(key1:any,data:any):any{
         let listOfUUID:any [] = [];
         if (!(key1 instanceof Object)) {
-            console.log("GT content invalid");
             throw new Error();
         }
         if(Object.keys(key1)[0]==='courses_avg'){
             let key2:any = key1["courses_avg"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -24,7 +22,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_pass'){
             let key2:any = key1["courses_pass"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -36,7 +33,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_fail'){
             let key2:any = key1["courses_fail"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -48,7 +44,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_audit'){
             let key2:any = key1["courses_audit"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -66,13 +61,11 @@ export default class Helper{
     Lessthan(key1:any,data:any):any{
         let listOfUUID:any [] = [];
         if (!(key1 instanceof Object)) {
-            console.log("LT content invalid");
             throw new Error();
         }
         if(Object.keys(key1)[0]==='courses_avg'){
             let key2:any = key1["courses_avg"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -84,7 +77,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_pass'){
             let key2:any = key1["courses_pass"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -96,7 +88,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_fail'){
             let key2:any = key1["courses_fail"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -108,7 +99,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_audit'){
             let key2:any = key1["courses_audit"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -126,13 +116,11 @@ export default class Helper{
     Equalto(key1:any,data:any):any{
         let listOfUUID:any [] = [];
         if (!(key1 instanceof Object)) {
-            console.log("EQ content invalid");
             throw new Error();
         }
         if(Object.keys(key1)[0]==='courses_avg'){
             let key2:any = key1["courses_avg"];
             if (!((typeof(key2)) === "number")) {
-                console.log("EQ content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -144,7 +132,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_pass'){
             let key2:any = key1["courses_pass"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -156,7 +143,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_fail'){
             let key2:any = key1["courses_fail"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -168,7 +154,6 @@ export default class Helper{
         else if(Object.keys(key1)[0]==='courses_audit'){
             let key2:any = key1["courses_audit"];
             if (!((typeof(key2)) === "number")) {
-                console.log("GT content invalid");
                 throw new Error();
             }
             for(let i of data){
@@ -481,45 +466,58 @@ export default class Helper{
         if ("LT" == Object.keys(tofilt)[0]) {
             var lt = tofilt["LT"];
             let ltkey: string = Object.keys(lt)[0];
-            if (!(ltkey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(ltkey) === "string" && !(ltkey.slice(0, 8) === "courses_")) {return true;}
         }
 
         else if ("GT" == Object.keys(tofilt)[0]) {
             var gt = tofilt["GT"];
             let gtkey: string = Object.keys(gt)[0];
-            if (!(gtkey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(gtkey) === "string" && !(gtkey.slice(0, 8) === "courses_")) {return true;}
         }
 
         else if ("EQ" == Object.keys(tofilt)[0]) {
             var eq = tofilt["EQ"];
             let eqkey: string = Object.keys(eq)[0];
-            if (!(eqkey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(eqkey) === "string" && !(eqkey.slice(0, 8) === "courses_")) {return true;}
         }
 
         else if ("IS" == Object.keys(tofilt)[0]) {
             var is = tofilt["IS"];
             let iskey: string = Object.keys(is)[0];
-            if (!(iskey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(iskey) === "string" && !(iskey.slice(0, 8) === "courses_")) {return true;}
         }
 
         else if ("AND" == Object.keys(tofilt)[0]) {
-            let and: any[] = tofilt["AND"];
-            for (let i of and) {
-                if (that.check(i)){return true;;}
+            if (tofilt["AND"] instanceof Array) {
+                let and: any[] = tofilt["AND"];
+                for (let i of and) {
+                    if (that.check(i)) {
+                        return true;
+                        ;
+                    }
+                }
             }
         }
 
 
         else if ("OR" == Object.keys(tofilt)[0]) {
-            let or: any[] = tofilt["OR"];
-            for (let i of or) {
-                if (that.check(i)){return true;}
+            if (tofilt["OR"] instanceof Array) {
+                let or: any[] = tofilt["OR"];
+                for (let i of or) {
+                    if (that.check(i)) {
+                        return true;
+                    }
+                }
             }
         }
 
         else if ("NOT" == Object.keys(tofilt)[0]) {
-            var not = tofilt["NOT"];
-            if (that.check(not)) {return true;}
+            if (tofilt["NOT"] instanceof Object) {
+                var not = tofilt["NOT"];
+                if (that.check(not)) {
+                    return true;
+                }
+            }
         }
         return false;
     }

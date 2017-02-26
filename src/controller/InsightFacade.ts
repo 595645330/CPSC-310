@@ -24,6 +24,7 @@ export default class InsightFacade implements IInsightFacade {
                 var JSZip = require("jszip");
                 let processList: Promise<any>[] = [];
                 let lists: any [] = [];
+                let year: number;
                 var new_zip = new JSZip();
                 let response: InsightResponse;
                 if (content === null || id === null || isUndefined(content) || isUndefined(id)) {
@@ -44,16 +45,21 @@ export default class InsightFacade implements IInsightFacade {
                                 let obs: any = parsedJson["result"]
                                 if (obs !== undefined && obs.length !== 0) {
                                     for (let ob of obs) {
+                                        if (ob["Section"] !== undefined && ob["Section"] === "overall"){year = 1900;}
+                                        else {year = Number(ob["Year"]);}
                                         var tos = (ob["id"]).toString();
-                                        var obj={"courses_dept":ob["Subject"],
-                                            "courses_id":ob["Course"],
-                                            "courses_avg":ob["Avg"],
-                                            "courses_instructor":ob["Professor"],
-                                            "courses_title":ob["Title"],
-                                            "courses_pass":ob["Pass"],
-                                            "courses_fail":ob["Fail"],
-                                            "courses_audit":ob["Audit"],
-                                            "courses_uuid":tos };
+                                        var obj = {
+                                            "courses_dept": ob["Subject"],
+                                            "courses_id": ob["Course"],
+                                            "courses_avg": ob["Avg"],
+                                            "courses_instructor": ob["Professor"],
+                                            "courses_title": ob["Title"],
+                                            "courses_pass": ob["Pass"],
+                                            "courses_fail": ob["Fail"],
+                                            "courses_audit": ob["Audit"],
+                                            "courses_uuid": tos,
+                                            "courses_year": year
+                                        };
                                         lists.push(obj);
                                     }
                                 }
@@ -133,20 +139,25 @@ export default class InsightFacade implements IInsightFacade {
                                 listOfBuilding.push(listOfBoth[i]);
                             }
                         }
-                            for (let key of Object.keys(files)) {
+                        // console.log(listOfBuilding);
+                        for (let build of listOfBuilding) {
+                            for(let key of Object.keys(files)){
                                 let file: any = files[key];
-                                for(let build of listOfBuilding){
-                                    if(file["name"].slice(41, file["name"].length) === (build)){
-                                        processList.push(file.async("string"));
-                                    }
+                                if(file["name"].slice(41, file["name"].length) === (build)){
+                                    processList.push(file.async("string"));
+                                    // console.log(file["name"]);
                                 }
                             }
-                            //----------------------------------------------------------------------------------------------------------
-                            Promise.all(processList).then(function (nums: string[]) {
-                                for (let num of nums) {
-                                    if (num !== undefined && num.length !== 0) {
-                                        const parse5 = require('parse5');
-                                        const document = parse5.parse(num);
+                        }
+                        //----------------------------------------------------------------------------------------------------------
+                        Promise.all(processList).then(function (nums: string[]) {
+
+                            for (let num of nums) {
+                                if (num !== undefined && num.length !== 0) {
+                                    const parse5 = require('parse5');
+                                    const document = parse5.parse(num);
+                                    let a = helper.findFullName(document["childNodes"])
+                                    if(a.length!==0){
                                         listOfFullName.push(helper.findFullName(document["childNodes"]));
                                         listOfRoom.push(helper.findRoomNumber(document["childNodes"]));
                                         listOfFurniture.push(helper.findFurniture(document["childNodes"]));
@@ -155,70 +166,95 @@ export default class InsightFacade implements IInsightFacade {
                                         listOfhref.push(helper.findhref(document["childNodes"]));
                                     }
                                 }
-                                //--------------------------------------------------------------------------
-                                for(let array of listOfhref){
-                                    if(array.length===0){
-                                        listOfRoomName.push([]);
+                            }
+                             // console.log(listOfFullName.length);
+                            //--------------------------------------------------------------------------
+                            for(let array of listOfhref){
+                                if(array.length===0){
+                                    listOfRoomName.push([]);
+                                }
+                                else{
+                                    for(let array2 of array){
+                                        listOfRoomName.push(array2.slice(69, array2.length));
                                     }
-                                    else{
-                                        for(let array2 of array){
-                                            listOfRoomName.push(array2.slice(69, array2.length));
+                                }
+                            }
+                            //---------------------------------------------------------------------------
+                            for(let address of listOfAddress){
+                                listOfLatLon.push(helper.GetLatLon("http://skaha.cs.ubc.ca:11316/api/v1/team80/".concat(address)));
+                            }
+                            Promise.all(listOfLatLon).then(function (kk: any) {
+                                for(let element of kk){
+                                    listOfLat.push(element["lat"]);
+                                    listOfLon.push(element["lon"]);
+                                }
+                                // console.log(listOfFullName.length);
+                                // console.log(listOfRoom.length);
+                                // console.log(listOfType.length)
+                                // console.log(listOfFurniture.length)
+                                // console.log(listOfSeats.length)
+                                // console.log(listOfAddress.length)
+
+                                for (let i:any= 0;i<listOfBuilding.length;i++) {
+                                    if(listOfRoom[i].length!==0){
+                                        for(let j:any =0; j<listOfRoom[i].length;j++){
+                                            var obj = {
+                                                "rooms_fullname": listOfFullName[i][0],
+                                                "rooms_shortname": listOfBuilding[i],
+                                                "rooms_number": listOfRoom[i][j],
+                                                "rooms_name": (listOfBuilding[i].concat('_')).concat(listOfRoom[i][j]),
+                                                "rooms_address": listOfAddress[i],
+                                                "rooms_lat": listOfLat[i],
+                                                "rooms_lon": listOfLon[i],
+                                                "rooms_seats": listOfSeats[i][j],
+                                                "rooms_type": listOfType[i][j],
+                                                "rooms_furniture":listOfFurniture[i][j],
+                                                "rooms_href":listOfhref[i][j]
+                                            };
+                                        lists.push(obj);
+                                    }}
+                                }
+
+                                if (lists.length === 0) {
+                                    throw new Error();
+                                }
+                                try {
+                                    fs.accessSync(id + '.txt');
+                                    response = {"code": 201, "body": {}};
+                                    fulfill(response)
+                                } catch (err) {
+                                    response = {"code": 204, "body": {}};
+                                    fs.writeFile(id + '.txt', JSON.stringify(lists), (err: any) => {
+                                        if (err) {
+                                            throw err;
                                         }
-                                    }
+                                        fulfill(response);
+                                    });
                                 }
-                                //---------------------------------------------------------------------------
-                                for(let address of listOfAddress){
-                                    listOfLatLon.push(helper.GetLatLon("http://skaha.cs.ubc.ca:11316/api/v1/team80/".concat(address)));
-                                }
-                                Promise.all(listOfLatLon).then(function (kk: any) {
-                                    for(let element of kk){
-                                        listOfLat.push(element["lat"]);
-                                        listOfLon.push(element["lon"]);
-                                    }
-                                    for (let i:any= 0;i<listOfBuilding.length;i++) {
-                                        if(listOfRoom[i].length!==0){
-                                            for(let j:any =0; j<listOfRoom[i].length;j++){
-                                                var obj = {
-                                                    "rooms_fullname": listOfFullName[i],
-                                                    "rooms_shortname": listOfBuilding[i],
-                                                    "rooms_number": listOfRoom[i][j],
-                                                    "rooms_name": listOfRoomName[i][j],
-                                                    "rooms_address": listOfAddress[i],
-                                                    "rooms_lat": listOfLat[i],
-                                                    "rooms_lon": listOfLon[i],
-                                                    "rooms_seats": listOfSeats[i][j],
-                                                    "rooms_type": listOfType[i][j],
-                                                    "rooms_funiture":listOfFurniture[i][j],
-                                                    "rooms_href":listOfhref[i][j]
-                                                };
-                                            lists.push(obj);
-                                        }}
-                                    }
-                                    if (lists.length === 0) {
-                                        throw new Error();
-                                    }
-                                    try {
-                                        fs.accessSync(id + '.txt');
-                                        response = {"code": 201, "body": {}};
-                                        fulfill(response)
-                                    } catch (err) {
-                                        response = {"code": 204, "body": {}};
-                                        fs.writeFile(id + '.txt', JSON.stringify(lists), (err: any) => {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                            fulfill(response);
-                                        });
-                                    }
-                                });
+                            }).catch(function (err: any) {
+                                reject({
+                                    "code": 400,
+                                    "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                                })
                             });
+                        }).catch(function (err: any) {
+                            reject({
+                                "code": 400,
+                                "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                            })
                         });
-                }).catch(function (err: any) {
-                    reject({
+                    }).catch(function (err: any) {
+                        reject({
                         "code": 400,
                         "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
-                    })
+                         })
                 });
+            }).catch(function (err: any) {
+                reject({
+                    "code": 400,
+                    "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                })
+            });
             }
         });
     }
@@ -251,9 +287,24 @@ export default class InsightFacade implements IInsightFacade {
             let listOfCourses: any [] = [];
             let listOfUUID: any [] = [];
 
-            try {fs.readFileSync('courses.txt',"utf-8").toString()}
-            catch(err) {reject({"code":424,"body":{"missing": ["courses"]}});}
+            let helpera = new Helper();
+            if (helpera.check(query["WHERE"]) === 1) {
+                try {
+                    fs.readFileSync('courses.txt', "utf-8").toString()
+                }
+                catch (err) {
+                    reject({"code": 424, "body": {"missing": ["courses"]}});
+                }
+            }
+            else if (helpera.check(query)["WHERE"] === 2) {
 
+                try {
+                    fs.readFileSync('rooms.txt', "utf-8").toString()
+                }
+                catch (err) {
+                    reject({"code": 424, "body": {"missing": ["courses"]}});
+                }
+            }
             if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
                 reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
                 throw new Error();
@@ -280,8 +331,11 @@ export default class InsightFacade implements IInsightFacade {
             //------------------------------------------------------------------
             for (let loc of listsOfColumn) {
                 if (!(loc==="courses_dept") && !(loc==="courses_id")
-                    && !(loc ==="courses_avg") && !(loc === "courses_instructor") && !(loc==="courses_title")
-                    && ! (loc === "courses_pass") && !(loc === "courses_fail") && !(loc === "courses_audit") && !(loc === "courses_uuid")){
+                    && !(loc ==="courses_avg") && !(loc === "courses_instructor") && !(loc==="courses_title") && !(loc === "courses_year")
+                    && ! (loc === "courses_pass") && !(loc === "courses_fail") && !(loc === "courses_audit") && !(loc === "courses_uuid")
+                    && ! (loc === "rooms_fullname") && ! (loc === "rooms_shortname") && ! (loc === "rooms_number") && ! (loc === "rooms_name")
+                    && ! (loc === "rooms_address") && ! (loc === "rooms_lat" ) && ! (loc === "rooms_lon") && ! (loc === "rooms_seats")
+                    && ! (loc === "rooms_type") && ! (loc === "rooms_furniture") && ! (loc === "rooms_href")){
                     reject({"code":400,"body":{"error": "wrong column"}});
                     throw new Error();
                 }
@@ -301,52 +355,64 @@ export default class InsightFacade implements IInsightFacade {
             }
 
             let helperb = new Helper();
-            if (helperb.check(where1)) {
+            console.log("checker number " + helperb.check(where1));
+            if (helperb.check(where1) === 3) {
                 reject({"code":424,"body":{"missing": ["courses"]}});
                 throw new Error();
             }
             //--------------------------------------------------------------------
-            try{
-                fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
+            else if (helperb.check(where1) === 1) {
+                var readfilename = "courses.txt";
+            }
+            else if (helperb.check(where1) === 2) {
+                var readfilename = "rooms.txt";
+            }
+            console.log(readfilename);
+            try {
+                fs.readFile(readfilename, "utf-8", (err: any, data: any) => {
                     if (err) {
-                        reject({"code":424,"body":{"missing": ["courses"]}})
+                        reject({"code": 424, "body": {"missing": ["courses"]}})
                         throw new Error();
                     }
                     try {
                         data = JSON.parse(data);
-                    }catch(err) {
+                    } catch (err) {
+                        console.log(err);
                         reject({"code": 400, "body": {"missing": ["courses"]}});
                     }
                     let helper = new Helper();
 
-                    try{
+                    try {
                         listOfUUID = helper.CompareNum(where1, data);
-                    } catch (err){
-                        reject({"code":400,"body":{"error": ["courses"]}});
+                    } catch (err) {
+                        reject({"code": 400, "body": {"error": ["courses"]}});
                     }
                     let listOfCourses: any[] = [];
-                    for(let uuid of listOfUUID){
-                        let course:any = {};
+                    for (let uuid of listOfUUID) {
+                        let course: any = {};
                         for (let column of listsOfColumn) {
                             course[column] = uuid[column];
                         }
                         listOfCourses.push(course);
                     }
-                    if(order!==""){
-                        if((option1["ORDER"] ==="courses_avg") ||(option1["ORDER"] ==="courses_pass") ||(option1["ORDER"] ==="courses_fail") ||(option1["ORDER"] ==="courses_audit")) {
+                    if (order !== "") {
+                        if ((option1["ORDER"] === "courses_avg") || (option1["ORDER"] === "courses_pass") || (option1["ORDER"] === "courses_fail") || (option1["ORDER"] === "courses_audit") || (option1["ORDER"] === "courses_year")
+                            ||  (option1["ORDER"] === "rooms_lat") ||  (option1["ORDER"] === "rooms_lon") ||  (option1["ORDER"] === "rooms_seats")) {
                             listOfCourses.sort(function (a, b) {
                                 return a[order] - b[order];
                             });
                         }
-                        else if((option1["ORDER"] ==="courses_dept") ||(option1["ORDER"] ==="courses_id") ||(option1["ORDER"] ==="courses_instructor") ||(option1["ORDER"] ==="courses_uuid")||(option1["ORDER"] ==="courses_title")){
-                            listOfCourses.sort(function(a, b){
-                                if(a[order] < b[order]) return -1;
-                                if(a[order] > b[order]) return 1;
+                        else if ((option1["ORDER"] === "courses_dept") || (option1["ORDER"] === "courses_id") || (option1["ORDER"] === "courses_instructor") || (option1["ORDER"] === "courses_uuid") || (option1["ORDER"] === "courses_title")
+                            ||  (option1["ORDER"] === "rooms_fullname") ||  (option1["ORDER"] === "rooms_shortname") ||  (option1["ORDER"] === "rooms_number") ||  (option1["ORDER"] === "rooms_name")
+                            ||  (option1["ORDER"] === "rooms_address") ||  (option1["ORDER"] === "rooms_type") ||  (option1["ORDER"] === "rooms_furniture") ||  (option1["ORDER"] === "rooms_href")) {
+                            listOfCourses.sort(function (a, b) {
+                                if (a[order] < b[order]) return -1;
+                                if (a[order] > b[order]) return 1;
                                 return 0;
                             })
                         }
-                        else{
-                            reject({"code":400,"body":{"error": "order wrong"}});
+                        else {
+                            reject({"code": 400, "body": {"error": "order wrong"}});
                             throw new Error();
                         }
                     }
@@ -354,9 +420,250 @@ export default class InsightFacade implements IInsightFacade {
                     fulfill({"code": 200, "body": output});
                     console.log(output);
                 });
-            }catch(err) {
-                reject({"code":424,"body":{"error":"the operation was unsuccessful because the delete was for a resource that was not previously added."}});
+            } catch (err) {
+                reject({
+                    "code": 424,
+                    "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                });
             }
+
         });
     }
+
+    // performQuery(query: QueryRequest): Promise <InsightResponse> {
+    //     let that = this;
+    //     return new Promise(function (fulfill, reject) {
+    //         var fs = require("fs");
+    //         var JSZip = require("jszip");
+    //         let output: any = {};
+    //         let order: any = "";
+    //         let listsOfColumn: any [] = [];
+    //         let listOfCourses: any [] = [];
+    //         let listOfUUID: any [] = [];
+    //
+    //         try {fs.readFileSync('rooms.txt',"utf-8").toString()}
+    //         catch(err) {reject({"code":424,"body":{"missing": ["courses"]}});}
+    //
+    //         if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
+    //             reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
+    //             throw new Error();
+    //         }
+    //         let where1: any = query["WHERE"];
+    //         let option1: any = query["OPTIONS"];
+    //         //---------------------------------------------------------------
+    //         if(!(where1 instanceof Object)){
+    //             reject({"code":400,"body":{"error": "Where wrong"}});
+    //             throw new Error();
+    //         }
+    //         if (!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
+    //             && !(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
+    //             reject({"code":400,"body":{"error": "OPTIONS wrong"}});
+    //             throw new Error();
+    //         }
+    //         if (!((option1["COLUMNS"])instanceof Array) || ((option1["COLUMNS"]).length ===0)) {
+    //             reject({"code":400,"body":{"error": "columns not a list or is empty"}});
+    //             throw new Error();
+    //         }
+    //         for (let a of option1["COLUMNS"]) {
+    //             listsOfColumn.push(a);
+    //         }
+    //         //------------------------------------------------------------------
+    //         for (let loc of listsOfColumn) {
+    //             if (!(loc==="rooms_fullname") && !(loc==="rooms_shortname")
+    //                 && !(loc ==="rooms_number") && !(loc === "rooms_name") && !(loc==="rooms_address")
+    //                 && ! (loc === "rooms_lat") && !(loc === "rooms_lon") && !(loc === "rooms_seats")
+    //                 && !(loc === "rooms_type")&& !(loc === "rooms_furniture") && !(loc === "rooms_href")){
+    //                 reject({"code":400,"body":{"error": "wrong column"}});
+    //                 throw new Error();
+    //             }
+    //         }
+    //         if (!(option1["FORM"] === "TABLE")) {
+    //             reject({"code":400,"body":{"error": "FORM not TABLE"}});
+    //             throw new Error();
+    //         }
+    //         output.render = option1["FORM"];
+    //         if(Object.keys(option1)[1] === "ORDER"){
+    //             order = option1["ORDER"];
+    //         }
+    //
+    //         if (!(listsOfColumn.includes(order)) && (order!=="")) {
+    //             reject({"code":400,"body":{"error": "order not in column"}});
+    //             throw new Error();
+    //         }
+    //
+    //         let helperb = new Helper();
+    //         // if (helperb.check(where1)) {
+    //         //     reject({"code":424,"body":{"missing": ["courses"]}});
+    //         //     throw new Error();
+    //         // }
+    //         //--------------------------------------------------------------------
+    //         try{
+    //             fs.readFile("rooms.txt", "utf-8", (err: any, data: any) => {
+    //                 if (err) {
+    //                     reject({"code":424,"body":{"missing": ["courses"]}})
+    //                     throw new Error();
+    //                 }
+    //                 try {
+    //                     data = JSON.parse(data);
+    //                 }catch(err) {
+    //                     reject({"code": 400, "body": {"missing": ["courses"]}});
+    //                 }
+    //                 let helper = new Helper();
+    //                 //console.log(data[0])
+    //                 try{
+    //                     // console.log(where1);
+    //                     listOfUUID = helper.CompareNum(where1, data);
+    //                 } catch (err){
+    //                     reject({"code":400,"body":{"error": ["courses"]}});
+    //                 }
+    //                 let listOfCourses: any[] = [];
+    //                 for(let uuid of listOfUUID){
+    //                     let course:any = {};
+    //                     for (let column of listsOfColumn) {
+    //                         course[column] = uuid[column];
+    //                     }
+    //                     listOfCourses.push(course);
+    //                 }
+    //                 if(order!==""){
+    //                     if((option1["ORDER"] ==="rooms_lat") ||(option1["ORDER"] ==="rooms_lon") ||(option1["ORDER"] ==="rooms_seats")) {
+    //                         listOfCourses.sort(function (a, b) {
+    //                             return a[order] - b[order];
+    //                         });
+    //                     }
+    //                     else if((option1["ORDER"] ==="rooms_fullname") ||(option1["ORDER"] ==="rooms_shortname") ||(option1["ORDER"] ==="rooms_number") ||(option1["ORDER"] ==="rooms_name")
+    //                         ||(option1["ORDER"] ==="rooms_address"||option1["ORDER"] ==="rooms_type") ||(option1["ORDER"] ==="rooms_furniture") ||(option1["ORDER"] ==="rooms_href")){
+    //                         listOfCourses.sort(function(a, b){
+    //                             if(a[order] < b[order]) return -1;
+    //                             if(a[order] > b[order]) return 1;
+    //                             return 0;
+    //                         })
+    //                     }
+    //                     else{
+    //                         reject({"code":400,"body":{"error": "order wrong"}});
+    //                         throw new Error();
+    //                     }
+    //                 }
+    //                 output.result = listOfCourses;
+    //                 fulfill({"code": 200, "body": output});
+    //                 console.log(output);
+    //             });
+    //         }catch(err) {
+    //             reject({"code":424,"body":{"error":"the operation was unsuccessful because the delete was for a resource that was not previously added."}});
+    //         }
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //         // try {fs.readFileSync('courses.txt',"utf-8").toString()}
+    //         // catch(err) {reject({"code":424,"body":{"missing": ["courses"]}});}
+    //         //
+    //         // if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
+    //         //     reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
+    //         //     throw new Error();
+    //         // }
+    //         // let where1: any = query["WHERE"];
+    //         // let option1: any = query["OPTIONS"];
+    //         // //---------------------------------------------------------------
+    //         // if(!(where1 instanceof Object)){
+    //         //     reject({"code":400,"body":{"error": "Where wrong"}});
+    //         //     throw new Error();
+    //         // }
+    //         // if (!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
+    //         //     && !(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
+    //         //     reject({"code":400,"body":{"error": "OPTIONS wrong"}});
+    //         //     throw new Error();
+    //         // }
+    //         // if (!((option1["COLUMNS"])instanceof Array) || ((option1["COLUMNS"]).length ===0)) {
+    //         //     reject({"code":400,"body":{"error": "columns not a list or is empty"}});
+    //         //     throw new Error();
+    //         // }
+    //         // for (let a of option1["COLUMNS"]) {
+    //         //     listsOfColumn.push(a);
+    //         // }
+    //         // //------------------------------------------------------------------
+    //         // for (let loc of listsOfColumn) {
+    //         //     if (!(loc==="courses_dept") && !(loc==="courses_id")
+    //         //         && !(loc ==="courses_avg") && !(loc === "courses_instructor") && !(loc==="courses_title")
+    //         //         && ! (loc === "courses_pass") && !(loc === "courses_fail") && !(loc === "courses_audit") && !(loc === "courses_uuid")){
+    //         //         reject({"code":400,"body":{"error": "wrong column"}});
+    //         //         throw new Error();
+    //         //     }
+    //         // }
+    //         // if (!(option1["FORM"] === "TABLE")) {
+    //         //     reject({"code":400,"body":{"error": "FORM not TABLE"}});
+    //         //     throw new Error();
+    //         // }
+    //         // output.render = option1["FORM"];
+    //         // if(Object.keys(option1)[1] === "ORDER"){
+    //         //     order = option1["ORDER"];
+    //         // }
+    //         //
+    //         // if (!(listsOfColumn.includes(order)) && (order!=="")) {
+    //         //     reject({"code":400,"body":{"error": "order not in column"}});
+    //         //     throw new Error();
+    //         // }
+    //         //
+    //         // let helperb = new Helper();
+    //         // if (helperb.check(where1)) {
+    //         //     reject({"code":424,"body":{"missing": ["courses"]}});
+    //         //     throw new Error();
+    //         // }
+    //         // //--------------------------------------------------------------------
+    //         // try{
+    //         //     fs.readFile("courses.txt", "utf-8", (err: any, data: any) => {
+    //         //         if (err) {
+    //         //             reject({"code":424,"body":{"missing": ["courses"]}})
+    //         //             throw new Error();
+    //         //         }
+    //         //         try {
+    //         //             data = JSON.parse(data);
+    //         //         }catch(err) {
+    //         //             reject({"code": 400, "body": {"missing": ["courses"]}});
+    //         //         }
+    //         //         let helper = new Helper();
+    //         //
+    //         //         try{
+    //         //             listOfUUID = helper.CompareNum(where1, data);
+    //         //         } catch (err){
+    //         //             reject({"code":400,"body":{"error": ["courses"]}});
+    //         //         }
+    //         //         let listOfCourses: any[] = [];
+    //         //         for(let uuid of listOfUUID){
+    //         //             let course:any = {};
+    //         //             for (let column of listsOfColumn) {
+    //         //                 course[column] = uuid[column];
+    //         //             }
+    //         //             listOfCourses.push(course);
+    //         //         }
+    //         //         if(order!==""){
+    //         //             if((option1["ORDER"] ==="courses_avg") ||(option1["ORDER"] ==="courses_pass") ||(option1["ORDER"] ==="courses_fail") ||(option1["ORDER"] ==="courses_audit")) {
+    //         //                 listOfCourses.sort(function (a, b) {
+    //         //                     return a[order] - b[order];
+    //         //                 });
+    //         //             }
+    //         //             else if((option1["ORDER"] ==="courses_dept") ||(option1["ORDER"] ==="courses_id") ||(option1["ORDER"] ==="courses_instructor") ||(option1["ORDER"] ==="courses_uuid")||(option1["ORDER"] ==="courses_title")){
+    //         //                 listOfCourses.sort(function(a, b){
+    //         //                     if(a[order] < b[order]) return -1;
+    //         //                     if(a[order] > b[order]) return 1;
+    //         //                     return 0;
+    //         //                 })
+    //         //             }
+    //         //             else{
+    //         //                 reject({"code":400,"body":{"error": "order wrong"}});
+    //         //                 throw new Error();
+    //         //             }
+    //         //         }
+    //         //         output.result = listOfCourses;
+    //         //         fulfill({"code": 200, "body": output});
+    //         //         console.log(output);
+    //         //     });
+    //         // }catch(err) {
+    //         //     reject({"code":424,"body":{"error":"the operation was unsuccessful because the delete was for a resource that was not previously added."}});
+    //         // }
+    //     });
+    // }
 }

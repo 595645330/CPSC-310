@@ -33,7 +33,31 @@ describe("Test1", function () {
         Log.test('AfterTest: ' + (<any>this).currentTest.title);
     });
 
+    function getBase64() {
+        var fs = require("fs");
+        return new Buffer(fs.readFileSync('courses.zip')).toString('base64');
+    }
 
+    function getBase70(){
+        var fs = require("fs");
+        return new Buffer(fs.readFileSync('empty.zip')).toString('base64');
+    }
+
+    function getBase85() {
+        var fs = require("fs");
+        return new Buffer(fs.readFileSync('rooms.zip')).toString('base64');
+    }
+
+    it.only("addDatasetNew204", function () {
+        var f1 = new InsightFacade();
+        return f1.addDataset("rooms",getBase85()).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response.code);
+            expect(response["code"]).to.equal(204);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
     let server:Server = null;
     server = new Server(3000);
 
@@ -102,17 +126,6 @@ describe("Test1", function () {
         expect(out.body).to.have.property('error');
         expect(out.body).to.deep.equal({error: 'Message not provided'});
     });
-
-
-    function getBase64() {
-        var fs = require("fs");
-        return new Buffer(fs.readFileSync('courses.zip')).toString('base64');
-    }
-
-    function getBase70(){
-        var fs = require("fs");
-        return new Buffer(fs.readFileSync('empty.zip')).toString('base64');
-    }
 
     it.only("addDatasetNew204", function () {
         var f1 = new InsightFacade();
@@ -1431,7 +1444,7 @@ describe("Test1", function () {
                     {"IS": {"courses_uuid": "blah"}},
                     {"GT": 2121},
                     {"GT": {"courses_avg": "21"}}
-        ]
+                ]
             },
             "OPTIONS": {
                 "COLUMNS": [
@@ -1939,19 +1952,19 @@ describe("Test1", function () {
         var f1 = new InsightFacade();
         var q1 = {
             "WHERE":
-                    {
-                        "AND": [
-                            {
-                                "GT": {
-                                    "courses_avg": 78
-                                }
-                            },
-                            {
-                                "LT": {
-                                    "courses_avg": 85
-                                }
-                            }]
-                    },
+                {
+                    "AND": [
+                        {
+                            "GT": {
+                                "courses_avg": 78
+                            }
+                        },
+                        {
+                            "LT": {
+                                "courses_avg": 85
+                            }
+                        }]
+                },
             "OPTIONS":{
                 "COLUMNS":[
                     "courses_dept",
@@ -2443,7 +2456,7 @@ describe("Test1", function () {
                             "courses_avg":"g"
                         }}]}
                 }
-                ]},
+            ]},
             "OPTIONS":{
                 "COLUMNS":[
                     "courses_dept",
@@ -2508,8 +2521,8 @@ describe("Test1", function () {
         var q1 = {
             "WHERE": {"OR": [
                 {"IS":{
-                "courses_dept":"adhe"
-            }},
+                    "courses_dept":"adhe"
+                }},
                 {"IS":{
                     "courses_id":"510"
                 }},
@@ -2660,6 +2673,7 @@ describe("Test1", function () {
 
         })
     });
+
 
 
 });

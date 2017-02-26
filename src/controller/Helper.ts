@@ -52,6 +52,50 @@ export default class Helper{
                 }
             }
         }
+        else if(Object.keys(key1)[0]==='courses_year'){
+            let key2:any = key1["courses_year"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["courses_year"]>key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_lat'){
+            let key2:any = key1["rooms_lat"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_lat"]>key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_lon'){
+            let key2:any = key1["rooms_lon"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_lon"]>key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_seats'){
+            let key2:any = key1["rooms_seats"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_seats"]>key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
         else{
             throw new Error();
         }
@@ -107,6 +151,50 @@ export default class Helper{
                 }
             }
         }
+        else if(Object.keys(key1)[0]==='courses_year'){
+            let key2:any = key1["courses_year"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["courses_year"]<key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_lat'){
+            let key2:any = key1["rooms_lat"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_lat"]<key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_lon'){
+            let key2:any = key1["rooms_lon"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_lon"]<key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_seats'){
+            let key2:any = key1["rooms_seats"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_seats"]<key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
         else{
             throw new Error();
         }
@@ -158,6 +246,50 @@ export default class Helper{
             }
             for(let i of data){
                 if(i["courses_audit"]===key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='courses_year'){
+            let key2:any = key1["courses_year"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["courses_year"]===key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_lat'){
+            let key2:any = key1["rooms_lat"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_lat"]===key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_lon'){
+            let key2:any = key1["rooms_lon"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_lon"]===key2){
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_seats'){
+            let key2:any = key1["rooms_seats"];
+            if (!((typeof(key2)) === "number")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if(i["rooms_seats"]===key2){
                     listOfUUID.push(i);
                 }
             }
@@ -271,6 +403,166 @@ export default class Helper{
                     listOfUUID.push(i);
                 }
                 else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['courses_uuid'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_fullname'){
+            let key2:any = key1["rooms_fullname"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_fullname']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_fullname'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_fullname'].slice(i['rooms_fullname'].length - key2.length + 1, i['rooms_fullname'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_fullname'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_shortname'){
+            let key2:any = key1["rooms_shortname"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_shortname']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_shortname'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_shortname'].slice(i['rooms_shortname'].length - key2.length + 1, i['rooms_shortname'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_shortname'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_number'){
+            let key2:any = key1["rooms_number"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_number']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_number'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_number'].slice(i['rooms_number'].length - key2.length + 1, i['rooms_number'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_number'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_name'){
+            let key2:any = key1["rooms_name"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_name']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_name'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_name'].slice(i['rooms_name'].length - key2.length + 1, i['rooms_name'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_name'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_address'){
+            let key2:any = key1["rooms_address"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_address']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_address'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_address'].slice(i['rooms_address'].length - key2.length + 1, i['rooms_address'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_address'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_type'){
+            let key2:any = key1["rooms_type"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_type']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_type'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_type'].slice(i['rooms_type'].length - key2.length + 1, i['rooms_type'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_type'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_furniture'){
+            let key2:any = key1["rooms_furniture"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_furniture']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_furniture'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_furniture'].slice(i['rooms_furniture'].length - key2.length + 1, i['rooms_furniture'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_furniture'].includes(key2.slice(1, key2.length - 1))) {
+                    listOfUUID.push(i);
+                }
+            }
+        }
+        else if(Object.keys(key1)[0]==='rooms_href'){
+            let key2:any = key1["rooms_href"];
+            if (!((typeof(key2)) === "string")) {
+                throw new Error();
+            }
+            for(let i of data){
+                if (!(key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2 === i['rooms_href']) {
+                    listOfUUID.push(i);
+                }
+                else if (!(key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && key2.slice(0, key2.length - 1) === i['rooms_href'].slice(0, key2.length - 1)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && !(key2.charAt(key2.length - 1) === "*") && key2.slice(1, key2.length) === i['rooms_href'].slice(i['rooms_href'].length - key2.length + 1, i['rooms_href'].length)) {
+                    listOfUUID.push(i);
+                }
+                else if ((key2.charAt(0) === "*") && (key2.charAt(key2.length - 1) === "*") && i['rooms_href'].includes(key2.slice(1, key2.length - 1))) {
                     listOfUUID.push(i);
                 }
             }
@@ -461,52 +753,56 @@ export default class Helper{
         return listOfUUID;
     }
 
-    check(tofilt: any): boolean {
+    check(tofilt: any): any {
         let that = this;
+        let result: number = 1;
         if ("LT" == Object.keys(tofilt)[0]) {
             var lt = tofilt["LT"];
             let ltkey: string = Object.keys(lt)[0];
-            if (typeof(ltkey) === "string" && !(ltkey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(ltkey) === "string" && !(ltkey.slice(0, 8) === "courses_") && !(ltkey.slice(0, 6) === "rooms_")) {return 3;}
+            else if (typeof(ltkey) === "string" && (ltkey.slice(0, 8) === "courses_")) {result = 1;}
+            else if (typeof(ltkey) === "string" && (ltkey.slice(0, 6) === "rooms_")) {result = 2;}
         }
 
         else if ("GT" == Object.keys(tofilt)[0]) {
             var gt = tofilt["GT"];
             let gtkey: string = Object.keys(gt)[0];
-            if (typeof(gtkey) === "string" && !(gtkey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(gtkey) === "string" && !(gtkey.slice(0, 8) === "courses_") && !(gtkey.slice(0, 6) === "rooms_")) {return 3;}
+            else if (typeof(gtkey) === "string" && (gtkey.slice(0, 8) === "courses_")) {result = 1;}
+            else if (typeof(gtkey) === "string" && (gtkey.slice(0, 6) === "rooms_")) {result = 2;}
         }
 
         else if ("EQ" == Object.keys(tofilt)[0]) {
             var eq = tofilt["EQ"];
             let eqkey: string = Object.keys(eq)[0];
-            if (typeof(eqkey) === "string" && !(eqkey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(eqkey) === "string" && !(eqkey.slice(0, 8) === "courses_") && !(eqkey.slice(0, 6) === "rooms_")) {return 3;}
+            else if (typeof(eqkey) === "string" && (eqkey.slice(0, 8) === "courses_")) {result = 1;}
+            else if (typeof(eqkey) === "string" && (eqkey.slice(0, 6) === "rooms_")) {result = 2;}
         }
 
         else if ("IS" == Object.keys(tofilt)[0]) {
             var is = tofilt["IS"];
             let iskey: string = Object.keys(is)[0];
-            if (typeof(iskey) === "string" && !(iskey.slice(0, 8) === "courses_")) {return true;}
+            if (typeof(iskey) === "string" && !(iskey.slice(0, 8) === "courses_") && !(iskey.slice(0, 6) === "rooms_")) {return 3;}
+            else if (typeof(iskey) === "string" && (iskey.slice(0, 8) === "courses_")) {result = 1;}
+            else if (typeof(iskey) === "string" && (iskey.slice(0, 6) === "rooms_")) {result = 2;}
         }
 
         else if ("AND" == Object.keys(tofilt)[0]) {
             if (tofilt["AND"] instanceof Array) {
                 let and: any[] = tofilt["AND"];
                 for (let i of and) {
-                    if (that.check(i)) {
-                        return true;
-                        ;
-                    }
+                    result = that.check(i);
+                    if (result === 3) {return 3;}
                 }
             }
         }
-
-
         else if ("OR" == Object.keys(tofilt)[0]) {
             if (tofilt["OR"] instanceof Array) {
                 let or: any[] = tofilt["OR"];
                 for (let i of or) {
-                    if (that.check(i)) {
-                        return true;
-                    }
+                    result = that.check(i);
+                    if (result === 3) {return 3;}
                 }
             }
         }
@@ -514,12 +810,11 @@ export default class Helper{
         else if ("NOT" == Object.keys(tofilt)[0]) {
             if (tofilt["NOT"] instanceof Object) {
                 var not = tofilt["NOT"];
-                if (that.check(not)) {
-                    return true;
-                }
+                result = that.check(not);
+                if (result === 3) {return 3;}
             }
         }
-        return false;
+        return result;
     }
 
     findBuilding(arrays: any): any {
@@ -561,20 +856,20 @@ export default class Helper{
     }
 
     findRoomNumber(arrays: any): any{
-            var helper = new Helper();
-            let listOfRoomNumber: any [] = [];
-            for (let element of arrays) {
-                for (let key of Object.keys(element)) {
-                    if (key === "attrs" && element[key][0] !== undefined && element[key][0]["name"] !== undefined && element[key][0]["name"] === "href" && element[key][1] !== undefined && element[key][1]["value"] !== undefined && element[key][1]["value"] === "Room Details") {
-                        // console.log(element["childNodes"][0]["value"]);
-                        listOfRoomNumber.push(element["childNodes"][0]["value"]);
-                        // console.log(element["childNodes"][0]["value"]);
-                    }
-                    else if (element[key] instanceof Array) {
-                        listOfRoomNumber=listOfRoomNumber.concat(helper.findRoomNumber(element[key]));
-                    }
+        var helper = new Helper();
+        let listOfRoomNumber: any [] = [];
+        for (let element of arrays) {
+            for (let key of Object.keys(element)) {
+                if (key === "attrs" && element[key][0] !== undefined && element[key][0]["name"] !== undefined && element[key][0]["name"] === "href" && element[key][1] !== undefined && element[key][1]["value"] !== undefined && element[key][1]["value"] === "Room Details") {
+                    // console.log(element["childNodes"][0]["value"]);
+                    listOfRoomNumber.push(element["childNodes"][0]["value"]);
+                    // console.log(element["childNodes"][0]["value"]);
+                }
+                else if (element[key] instanceof Array) {
+                    listOfRoomNumber=listOfRoomNumber.concat(helper.findRoomNumber(element[key]));
                 }
             }
+        }
         return listOfRoomNumber;
     }
 

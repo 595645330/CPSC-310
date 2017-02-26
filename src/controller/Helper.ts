@@ -521,4 +521,176 @@ export default class Helper{
         }
         return false;
     }
+
+    findBuilding(arrays: any): any {
+        var helper = new Helper();
+        let listOfBuilding: any [] = [];
+        for(let array of arrays){
+            for(let key of Object.keys(array)){
+                if(key==="nodeName"){
+                    if(array["nodeName"]==="td"){
+                        let buildName:any = array["childNodes"][0]["value"].replace(/(^[\s]+|[\s]+$)/g, '');
+                        if(buildName!==""){
+                            // console.log(array["childNodes"][0]["value"].replace(/(^[\s]+|[\s]+$)/g, ''));
+                            listOfBuilding.push(array["childNodes"][0]["value"].replace(/(^[\s]+|[\s]+$)/g, ''));
+                        }
+                    }
+                }
+                else if(key==="childNodes"){
+                    listOfBuilding=listOfBuilding.concat(helper.findBuilding(array["childNodes"]));
+                }
+            }
+        }
+        return listOfBuilding;
+    }
+
+    findFullName(arrays: any): any {
+        var helper = new Helper();
+        let listOfFullName: any [] = [];
+        for(let element of arrays){
+            for(let key of Object.keys(element)){
+                if(key==="attrs"&&element[key].length!==0&&element[key][0]["value"]==="building-info"){
+                    listOfFullName.push(element["childNodes"][1]["childNodes"][0]["childNodes"][0]["value"]);
+                }
+                else if(element[key] instanceof Array){
+                    listOfFullName=listOfFullName.concat(helper.findFullName(element[key]));
+                }
+            }
+        }
+        return listOfFullName;
+    }
+
+    findRoomNumber(arrays: any): any{
+            var helper = new Helper();
+            let listOfRoomNumber: any [] = [];
+            for (let element of arrays) {
+                for (let key of Object.keys(element)) {
+                    if (key === "attrs" && element[key][0] !== undefined && element[key][0]["name"] !== undefined && element[key][0]["name"] === "href" && element[key][1] !== undefined && element[key][1]["value"] !== undefined && element[key][1]["value"] === "Room Details") {
+                        // console.log(element["childNodes"][0]["value"]);
+                        listOfRoomNumber.push(element["childNodes"][0]["value"]);
+                        // console.log(element["childNodes"][0]["value"]);
+                    }
+                    else if (element[key] instanceof Array) {
+                        listOfRoomNumber=listOfRoomNumber.concat(helper.findRoomNumber(element[key]));
+                    }
+                }
+            }
+        return listOfRoomNumber;
+    }
+
+    findhref(arrays: any): any {
+        var helper = new Helper();
+        let listOfhref: any [] = [];
+        for(let element of arrays){
+            for(let key of Object.keys(element)){
+                if(key==="attrs"&&element[key][0]!== undefined && element[key][0]["name"]!== undefined&&element[key][0]["name"]==="href"&&element[key][1]!== undefined && element[key][1]["value"]!== undefined&&element[key][1]["value"]==="Room Details"){
+                    listOfhref.push(element[key][0]["value"]);
+                }
+                else if(element[key] instanceof Array){
+                    listOfhref=listOfhref.concat(helper.findhref(element[key]));
+                }
+            }
+        }
+        return listOfhref;
+    }
+
+    findSeats(arrays: any): any {
+        var helper = new Helper();
+        let listOfSeats: any [] = [];
+        for(let element of arrays){
+            for(let key of Object.keys(element)){
+                if(key==="attrs"&&element[key][0]!== undefined && element[key][0]["name"]!== undefined&&element[key][0]["name"]==="class"&&element[key][0]["value"]!== undefined&&element[key][0]["value"]==="views-field views-field-field-room-capacity"){
+                    let numberOfseat =Number(element["childNodes"][0]["value"].replace(/(^[\s]+|[\s]+$)/g, ''));
+                    if( !isNaN(numberOfseat) ){
+                        listOfSeats.push(numberOfseat);
+                    }
+                }
+                else if(element[key] instanceof Array){
+                    listOfSeats=listOfSeats.concat(helper.findSeats(element[key]));
+                }
+            }
+        }
+        return listOfSeats;
+    }
+
+    findType(arrays: any): any {
+        var helper = new Helper();
+        let listOfType: any [] = [];
+        for(let element of arrays){
+            for(let key of Object.keys(element)){
+                if(key==="attrs"&&element[key][0]!== undefined && element[key][0]["name"]!== undefined&&element[key][0]["name"]==="class"&&element[key][0]["value"]!== undefined&&element[key][0]["value"]==="views-field views-field-field-room-type"){
+                    let typeOfRoom =element["childNodes"][0]["value"].replace(/(^[\s]+|[\s]+$)/g, '');
+                    if(typeOfRoom!=="Room type"){
+                        listOfType.push(typeOfRoom);
+                    }
+                }
+                else if(element[key] instanceof Array){
+                    listOfType=listOfType.concat(helper.findType(element[key]));
+                }
+            }
+        }
+        return listOfType;
+    }
+
+    findFurniture(arrays: any): any {
+        var helper = new Helper();
+        let listOfFurniture: any [] = [];
+        for(let element of arrays){
+            for(let key of Object.keys(element)){
+                if(key==="attrs"&&element[key][0]!== undefined && element[key][0]["name"]!== undefined&&element[key][0]["name"]==="class"&&element[key][0]["value"]!== undefined&&element[key][0]["value"]==="views-field views-field-field-room-furniture"){
+                    let typeOfRoom =element["childNodes"][0]["value"].replace(/(^[\s]+|[\s]+$)/g, '');
+                    if(typeOfRoom!=="Furniture type"){
+                        listOfFurniture.push(typeOfRoom);
+                    }
+                }
+                else if(element[key] instanceof Array){
+                    listOfFurniture=listOfFurniture.concat(helper.findFurniture(element[key]));
+                }
+            }
+        }
+        return listOfFurniture;
+    }
+
+    GetLatLon(url: any): Promise<any> {
+        return new Promise(function (fulfill, reject) {
+            var http = require('http');
+            let listOfLatLon: any [] = [];
+            http.get(url, (res: any) => {
+                const statusCode = res.statusCode;
+                const contentType = res.headers['content-type'];
+                // let parsedData:any;
+                let error: any;
+                if (statusCode !== 200) {
+                    error = new Error(`Request Failed.\n` +
+                        `Status Code: ${statusCode}`);
+                } else if (!/^application\/json/.test(contentType)) {
+                    error = new Error(`Invalid content-type.\n` +
+                        `Expected application/json but received ${contentType}`);
+                }
+                if (error) {
+                    console.log(error.message);
+                    res.resume();
+                    return;
+                }
+
+                res.setEncoding('utf8');
+                let rawData = '';
+                res.on('data', (chunk: any) => rawData += chunk);
+                res.on('end', () => {
+                    try {
+                        // console.log(rawData);
+                        let parsedData = JSON.parse(rawData);
+                        // if (parsedData["error"] !== undefined || parsedData === {}){console.log("duke did this")}
+                        fulfill(parsedData);
+                    } catch (e) {
+                        console.log(e.message);
+                        reject(e);
+                    }
+                });
+            }).on('error', (e: any) => {
+                console.log(`Got error: ${e.message}`);
+            });
+        });
+    }
+
 }

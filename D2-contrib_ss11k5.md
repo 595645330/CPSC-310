@@ -1,4 +1,4 @@
-1.  final test pass rate: 96% line coverage rate: 100%
+1.  final test pass rate: 96% line coverage rate: 96% 
 
 2.  I wrote the check function in the helper function, part of the parsing html functions in helper, and I made all the
     changes to our EQ,GT,IS.. functions.

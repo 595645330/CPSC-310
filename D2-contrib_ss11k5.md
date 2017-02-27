@@ -1,6 +1,7 @@
 1.  final test pass rate: 96% line coverage rate: 100%
 
-2.  I wrote the check function in the helper function, part of the parsing html functions in helper.
+2.  I wrote the check function in the helper function, part of the parsing html functions in helper, and I made all the
+    changes to our EQ,GT,IS.. functions.
     I also wrote the error handling cases, so that our code can reject 400 and 424 errors. And I worked on the 
     unit tests to make our line coverage 100%.
     

@@ -1,4 +1,3 @@
-
 /**
  * This is the main programmatic entry point for the project.
  */
@@ -286,155 +285,148 @@ export default class InsightFacade implements IInsightFacade {
             let listsOfColumn: any [] = [];
             let listOfCourses: any [] = [];
             let listOfUUID: any [] = [];
-            let ifPass:any = true;
 
             let helpera = new Helper();
-
-            if (JSON.stringify(query).includes("rooms_") && JSON.stringify(query).includes("courses_")) {
+            if (JSON.stringify(query["WHERE"]).includes("rooms_") && JSON.stringify(query["WHERE"]).includes("courses_")) {
                 reject({"code":400,"body":{"error": "2 sources in a query"}});
-                ifPass=false;
+                throw new Error();
             }
-            if (ifPass &&helpera.check(query["WHERE"]) === 1) {
+            if (helpera.check(query["WHERE"]) === 1) {
                 try {
                     fs.readFileSync('courses.txt', "utf-8").toString()
                 }
                 catch (err) {
-                    reject({"code": 424, "body": {"missing": ["courses duke"]}});
-                    ifPass = false;
+                    reject({"code": 424, "body": {"missing": ["courses"]}});
                 }
             }
-            else if (ifPass &&helpera.check(query["WHERE"]) === 2) {
+            else if (helpera.check(query)["WHERE"] === 2) {
+
                 try {
                     fs.readFileSync('rooms.txt', "utf-8").toString()
                 }
                 catch (err) {
-                    reject({"code": 424, "body": {"missing": ["rooms"]}});
-                    ifPass = false;
+                    reject({"code": 424, "body": {"missing": ["courses"]}});
                 }
             }
-            if(ifPass &&!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
+            if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
                 reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
-                ifPass=false;
+                throw new Error();
             }
             let where1: any = query["WHERE"];
             let option1: any = query["OPTIONS"];
             //---------------------------------------------------------------
-            if(ifPass &&!(where1 instanceof Object)){
+            if(!(where1 instanceof Object)){
                 reject({"code":400,"body":{"error": "Where wrong"}});
-                ifPass=false;
+                throw new Error();
             }
-            if (ifPass &&!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
+            if (!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
                 && !(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
                 reject({"code":400,"body":{"error": "OPTIONS wrong"}});
-                ifPass=false;
+                throw new Error();
             }
-            if (ifPass &&!((option1["COLUMNS"])instanceof Array) || ((option1["COLUMNS"]).length ===0)) {
+            if (!((option1["COLUMNS"])instanceof Array) || ((option1["COLUMNS"]).length ===0)) {
                 reject({"code":400,"body":{"error": "columns not a list or is empty"}});
-                ifPass=false;
+                throw new Error();
             }
-            if(ifPass) {
-                for (let a of option1["COLUMNS"]) {
-                    listsOfColumn.push(a);
-                }
-                //------------------------------------------------------------------
-                for (let loc of listsOfColumn) {
-                    if (!(loc === "courses_dept") && !(loc === "courses_id")
-                        && !(loc === "courses_avg") && !(loc === "courses_instructor") && !(loc === "courses_title") && !(loc === "courses_year")
-                        && !(loc === "courses_pass") && !(loc === "courses_fail") && !(loc === "courses_audit") && !(loc === "courses_uuid")
-                        && !(loc === "rooms_fullname") && !(loc === "rooms_shortname") && !(loc === "rooms_number") && !(loc === "rooms_name")
-                        && !(loc === "rooms_address") && !(loc === "rooms_lat" ) && !(loc === "rooms_lon") && !(loc === "rooms_seats")
-                        && !(loc === "rooms_type") && !(loc === "rooms_furniture") && !(loc === "rooms_href")) {
-                        reject({"code": 400, "body": {"error": "wrong column"}});
-                        ifPass=false;
-                    }
+            for (let a of option1["COLUMNS"]) {
+                listsOfColumn.push(a);
+            }
+            //------------------------------------------------------------------
+            for (let loc of listsOfColumn) {
+                if (!(loc==="courses_dept") && !(loc==="courses_id")
+                    && !(loc ==="courses_avg") && !(loc === "courses_instructor") && !(loc==="courses_title") && !(loc === "courses_year")
+                    && ! (loc === "courses_pass") && !(loc === "courses_fail") && !(loc === "courses_audit") && !(loc === "courses_uuid")
+                    && ! (loc === "rooms_fullname") && ! (loc === "rooms_shortname") && ! (loc === "rooms_number") && ! (loc === "rooms_name")
+                    && ! (loc === "rooms_address") && ! (loc === "rooms_lat" ) && ! (loc === "rooms_lon") && ! (loc === "rooms_seats")
+                    && ! (loc === "rooms_type") && ! (loc === "rooms_furniture") && ! (loc === "rooms_href")){
+                    reject({"code":400,"body":{"error": "wrong column"}});
+                    throw new Error();
                 }
             }
-            if (ifPass &&!(option1["FORM"] === "TABLE")) {
+            if (!(option1["FORM"] === "TABLE")) {
                 reject({"code":400,"body":{"error": "FORM not TABLE"}});
-                ifPass=false;
+                throw new Error();
             }
             output.render = option1["FORM"];
-            if(ifPass &&Object.keys(option1)[1] === "ORDER"){
+            if(Object.keys(option1)[1] === "ORDER"){
                 order = option1["ORDER"];
             }
 
-            if (ifPass &&!(listsOfColumn.includes(order)) && (order!=="")) {
+            if (!(listsOfColumn.includes(order)) && (order!=="")) {
                 reject({"code":400,"body":{"error": "order not in column"}});
-                ifPass=false;
+                throw new Error();
             }
 
             let helperb = new Helper();
             console.log("checker number " + helperb.check(where1));
-            if (ifPass &&helperb.check(where1) === 3) {
+            if (helperb.check(where1) === 3) {
                 reject({"code":424,"body":{"missing": ["ddcourses"]}});
                 throw new Error();
             }
             //--------------------------------------------------------------------
-            else if (ifPass &&helperb.check(where1) === 1) {
+            else if (helperb.check(where1) === 1) {
                 var readfilename = "courses.txt";
             }
-            else if (ifPass &&helperb.check(where1) === 2) {
+            else if (helperb.check(where1) === 2) {
                 var readfilename = "rooms.txt";
             }
-            // console.log(readfilename);
-            if(ifPass){
-                try {
-                    fs.readFile(readfilename, "utf-8", (err: any, data: any) => {
-                        if (err) {
-                            reject({"code": 424, "body": {"aamissing": ["courses"]}})
-                        }
-                        try {
-                            data = JSON.parse(data);
-                        } catch (err) {
-                            console.log(err);
-                            reject({"code": 400, "body": {"error": "parse error"}});
-                        }
-                        let helper = new Helper();
+            console.log(readfilename);
+            try {
+                fs.readFile(readfilename, "utf-8", (err: any, data: any) => {
+                    if (err) {
+                        reject({"code": 424, "body": {"aamissing": ["courses"]}})
+                    }
+                    try {
+                        data = JSON.parse(data);
+                    } catch (err) {
+                        console.log(err);
+                        reject({"code": 400, "body": {"missing": ["courses"]}});
+                    }
+                    let helper = new Helper();
 
-                        try {
-                            listOfUUID = helper.CompareNum(where1, data);
-                        } catch (err) {
-                            reject({"code": 400, "body": {"error": "helper error"}});
+                    try {
+                        listOfUUID = helper.CompareNum(where1, data);
+                    } catch (err) {
+                        reject({"code": 400, "body": {"error": ["courses"]}});
+                    }
+                    let listOfCourses: any[] = [];
+                    for (let uuid of listOfUUID) {
+                        let course: any = {};
+                        for (let column of listsOfColumn) {
+                            course[column] = uuid[column];
                         }
-                        let listOfCourses: any[] = [];
-                        for (let uuid of listOfUUID) {
-                            let course: any = {};
-                            for (let column of listsOfColumn) {
-                                course[column] = uuid[column];
-                            }
-                            listOfCourses.push(course);
+                        listOfCourses.push(course);
+                    }
+                    if (order !== "") {
+                        if ((option1["ORDER"] === "courses_avg") || (option1["ORDER"] === "courses_pass") || (option1["ORDER"] === "courses_fail") || (option1["ORDER"] === "courses_audit") || (option1["ORDER"] === "courses_year")
+                            ||  (option1["ORDER"] === "rooms_lat") ||  (option1["ORDER"] === "rooms_lon") ||  (option1["ORDER"] === "rooms_seats")) {
+                            listOfCourses.sort(function (a, b) {
+                                return a[order] - b[order];
+                            });
                         }
-                        if (order !== "") {
-                            if ((option1["ORDER"] === "courses_avg") || (option1["ORDER"] === "courses_pass") || (option1["ORDER"] === "courses_fail") || (option1["ORDER"] === "courses_audit") || (option1["ORDER"] === "courses_year")
-                                ||  (option1["ORDER"] === "rooms_lat") ||  (option1["ORDER"] === "rooms_lon") ||  (option1["ORDER"] === "rooms_seats")) {
-                                listOfCourses.sort(function (a, b) {
-                                    return a[order] - b[order];
-                                });
-                            }
-                            else if ((option1["ORDER"] === "courses_dept") || (option1["ORDER"] === "courses_id") || (option1["ORDER"] === "courses_instructor") || (option1["ORDER"] === "courses_uuid") || (option1["ORDER"] === "courses_title")
-                                ||  (option1["ORDER"] === "rooms_fullname") ||  (option1["ORDER"] === "rooms_shortname") ||  (option1["ORDER"] === "rooms_number") ||  (option1["ORDER"] === "rooms_name")
-                                ||  (option1["ORDER"] === "rooms_address") ||  (option1["ORDER"] === "rooms_type") ||  (option1["ORDER"] === "rooms_furniture") ||  (option1["ORDER"] === "rooms_href")) {
-                                listOfCourses.sort(function (a, b) {
-                                    if (a[order] < b[order]) return -1;
-                                    if (a[order] > b[order]) return 1;
-                                    return 0;
-                                })
-                            }
-                            else {
-                                reject({"code": 400, "body": {"error": "order wrong"}});
-                                throw new Error();
-                            }
+                        else if ((option1["ORDER"] === "courses_dept") || (option1["ORDER"] === "courses_id") || (option1["ORDER"] === "courses_instructor") || (option1["ORDER"] === "courses_uuid") || (option1["ORDER"] === "courses_title")
+                            ||  (option1["ORDER"] === "rooms_fullname") ||  (option1["ORDER"] === "rooms_shortname") ||  (option1["ORDER"] === "rooms_number") ||  (option1["ORDER"] === "rooms_name")
+                            ||  (option1["ORDER"] === "rooms_address") ||  (option1["ORDER"] === "rooms_type") ||  (option1["ORDER"] === "rooms_furniture") ||  (option1["ORDER"] === "rooms_href")) {
+                            listOfCourses.sort(function (a, b) {
+                                if (a[order] < b[order]) return -1;
+                                if (a[order] > b[order]) return 1;
+                                return 0;
+                            })
                         }
-                        output.result = listOfCourses;
-                        fulfill({"code": 200, "body": output});
-                        console.log(output);
-                    });
-                } catch (err) {
-                    reject({
-                        "code": 424,
-                        "body": {"code": 424, "body": {"missing": ["some"]}}
-                    });
-                }
+                        else {
+                            reject({"code": 400, "body": {"error": "order wrong"}});
+                            throw new Error();
+                        }
+                    }
+                    output.result = listOfCourses;
+                    fulfill({"code": 200, "body": output});
+                    console.log(output);
+                });
+            } catch (err) {
+                reject({
+                    "code": 424,
+                    "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                });
             }
         });
     }

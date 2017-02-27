@@ -288,7 +288,7 @@ export default class InsightFacade implements IInsightFacade {
             let listOfUUID: any [] = [];
 
             let helpera = new Helper();
-            if (JSON.stringify(query["WHERE"]).includes("rooms_") && JSON.stringify(query["WHERE"]).includes("courses_")) {
+            if (JSON.stringify(query).includes("rooms_") && JSON.stringify(query).includes("courses_")) {
                 reject({"code":400,"body":{"error": "2 sources in a query"}});
                 throw new Error();
             }
@@ -297,16 +297,18 @@ export default class InsightFacade implements IInsightFacade {
                     fs.readFileSync('courses.txt', "utf-8").toString()
                 }
                 catch (err) {
-                    reject({"code": 424, "body": {"missing": ["courses"]}});
+                    reject({"code": 424, "body": {"missing": ["courses duke"]}});
+                    throw new Error();
                 }
             }
-            else if (helpera.check(query)["WHERE"] === 2) {
+            else if (helpera.check(query["WHERE"]) === 2) {
 
                 try {
                     fs.readFileSync('rooms.txt', "utf-8").toString()
                 }
                 catch (err) {
-                    reject({"code": 424, "body": {"missing": ["courses"]}});
+                    reject({"code": 424, "body": {"missing": ["rooms"]}});
+                    throw new Error();
                 }
             }
             if(!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
@@ -381,14 +383,14 @@ export default class InsightFacade implements IInsightFacade {
                         data = JSON.parse(data);
                     } catch (err) {
                         console.log(err);
-                        reject({"code": 400, "body": {"missing": ["courses"]}});
+                        reject({"code": 400, "body": {"error": "parse error"}});
                     }
                     let helper = new Helper();
 
                     try {
                         listOfUUID = helper.CompareNum(where1, data);
                     } catch (err) {
-                        reject({"code": 400, "body": {"error": ["courses"]}});
+                        reject({"code": 400, "body": {"error": "helper error"}});
                     }
                     let listOfCourses: any[] = [];
                     for (let uuid of listOfUUID) {
@@ -426,7 +428,7 @@ export default class InsightFacade implements IInsightFacade {
             } catch (err) {
                 reject({
                     "code": 424,
-                    "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                    "body": {"code": 424, "body": {"missing": ["some"]}}
                 });
             }
         });

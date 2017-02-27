@@ -48,27 +48,8 @@ describe("Test1", function () {
         return new Buffer(fs.readFileSync('rooms.zip')).toString('base64');
     }
 
-    // it.only("removeDataset204", function () {
-    //     var f1 = new InsightFacade();
-    //     return f1.removeDataset("rooms").then(function(response:InsightResponse) {
-    //         Log.test('Value: ' + response);
-    //         expect(response["code"]).to.equal(204);
-    //     }).catch(function (err) {
-    //         console.log(err);
-    //         expect.fail();
-    //     })
-    // });
 
-    it.only("removeDataset404", function () {
-        var f1 = new InsightFacade();
-        return f1.removeDataset("rooms").then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect.fail();
-        }).catch(function (err) {
-            console.log(err);
-            expect(err["code"]).to.equal(404);
-        })
-    });
+
 
     it.only("addDatasetNew204", function () {
         var f1 = new InsightFacade();
@@ -184,7 +165,7 @@ describe("Test1", function () {
         expect(out.body).to.deep.equal({error: 'Message not provided'});
     });
 
-    it.only("addDatasetNew204", function () {
+    it.only("addDatasetNew204 cour", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
             Log.test('Value: ' + response.code);
@@ -195,7 +176,7 @@ describe("Test1", function () {
         })
     });
 
-    it.only("addDatasetOld201", function () {
+    it.only("addDatasetOld201 cour", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
             Log.test('Value: ' + response.code);
@@ -206,7 +187,7 @@ describe("Test1", function () {
         })
     });
 
-    it.only("addDataset400", function () {
+    it.only("addDataset400 cour", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("courses",getBase70()).then(function(response:InsightResponse) {
             Log.test('Value: ' + response.code);
@@ -216,7 +197,7 @@ describe("Test1", function () {
             expect(err["code"]).to.equal(400);
         })
     });
-    it.only("addDataset400 null content", function () {
+    it.only("addDataset400 null content cour", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("courses",null).then(function(response:InsightResponse) {
             Log.test('Value: ' + response.code);
@@ -224,181 +205,6 @@ describe("Test1", function () {
         }).catch(function (err) {
             console.log(err);
             expect(err["code"]).to.equal(400);
-        })
-    });
-    //---------------
-    it.only("Room_address(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_address": "*Agrono*"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_address", "rooms_name"
-                ],
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("Room_name(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_name": "DMP_*"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_name"
-                ],
-                "ORDER": "rooms_name",
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("Room_furniture(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_furniture": "Classroom-Fixed Tablets"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_name"
-                ],
-                "ORDER": "rooms_name",
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("Room_Type(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_type": "Tiered Large Group"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_name"
-                ],
-                "ORDER": "rooms_name",
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("Room_fullname(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_fullname": "Hugh Dempster Pavilion"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_name"
-                ],
-                "ORDER": "rooms_name",
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("Room_shortname(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_shortname": "DMP"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_name"
-                ],
-                "ORDER": "rooms_name",
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("Room_href(IS) pass 200 ", function () {
-        var f1 = new InsightFacade();
-        var q1 = {
-            "WHERE": {
-                "IS": {
-                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
-                }
-            },
-            "OPTIONS": {
-                "COLUMNS": [
-                    "rooms_name"
-                ],
-                "ORDER": "rooms_name",
-                "FORM": "TABLE"
-            }
-        }
-        return f1.performQuery(q1).then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(200);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
         })
     });
     //---------------
@@ -2810,90 +2616,150 @@ describe("Test1", function () {
         })
     });
 
-    it.only("removeDataset204", function () {
-        var f1 = new InsightFacade();
-        return f1.removeDataset("courses").then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(204);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
 
-    it.only("removeDataset404", function () {
+    it.only("courses year gt200 ", function () {
         var f1 = new InsightFacade();
-        return f1.removeDataset("courses").then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect.fail();
-        }).catch(function (err) {
-            console.log(err);
-            expect(err["code"]).to.equal(404);
-        })
-    });
-    it.only("removeDataset rooms 204", function () {
-        var f1 = new InsightFacade();
-        return f1.removeDataset("rooms").then(function(response:InsightResponse) {
-            Log.test('Value: ' + response);
-            expect(response["code"]).to.equal(204);
-        }).catch(function (err) {
-            console.log(err);
-            expect.fail();
-        })
-    });
-
-    it.only("no source 424", function () {
-        var f1 = new InsightFacade();
-        let q1:QueryRequest = {
-            "WHERE":{
-                "GT":{
-                    "courses_avg":97.6
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "courses_year": 1900
                 }
             },
-            "OPTIONS":{
-                "COLUMNS":[
-                    "courses_dept",
-                    "courses_fail"
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_year"
                 ],
-                "ORDER":"courses_avg",
-                "FORM":"TABLE"
+                "ORDER": "courses_year",
+                "FORM": "TABLE"
             }
         }
         return f1.performQuery(q1).then(function(response:InsightResponse) {
             Log.test('Value: ' + response);
-            console.log(response);
-            expect.fail();
+            expect(response["code"]).to.equal(200);
         }).catch(function (err) {
             console.log(err);
-            expect(err["code"]).to.equal(424);
-
+            expect.fail();
         })
     });
-    it.only("rooms no source 424", function () {
+    it.only("courses year gt400 ", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
-            "WHERE":{
-                "GT":{
-                    "rooms_seats":40
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "courses_year": "2"
                 }
             },
-            "OPTIONS":{
-                "COLUMNS":[
-                    "rooms_seats",
-                    "rooms_name"
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_year"
                 ],
-                "ORDER":"rooms_seats",
-                "FORM":"TABLE"
+                "ORDER": "courses_year",
+                "FORM": "TABLE"
             }
         }
         return f1.performQuery(q1).then(function(response:InsightResponse) {
             Log.test('Value: ' + response);
-            console.log(response);
             expect.fail();
         }).catch(function (err) {
             console.log(err);
-            expect(err["code"]).to.equal(424);
+            expect(err["code"]).to.equal(400);
+        })
+    });
 
+    it.only("courses year lt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "courses_year": 2000
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_year"
+                ],
+                "ORDER": "courses_year",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("courses year LT400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "courses_year": "2"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_year"
+                ],
+                "ORDER": "courses_year",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("courses year eq200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "courses_year": 1900
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_year"
+                ],
+                "ORDER": "courses_year",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("courses year eq400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "courses_year": "2"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_year"
+                ],
+                "ORDER": "courses_year",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
         })
     });
     //-----------------------------------------------------------
@@ -2930,16 +2796,1520 @@ describe("Test1", function () {
             expect(err["code"]).to.equal(400);
         })
     });
+    it.only("Room_address(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_address": "*Agrono*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_address", "rooms_name"
+                ],
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_address(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_address": "1984 West Mall"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_address", "rooms_name"
+                ],
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_address(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_address": "*1984 West Mall"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_address", "rooms_name"
+                ],
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_address(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_address": "1984 West Mall*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_address", "rooms_name"
+                ],
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
+    it.only("Room_name(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_name": "DMP_*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
 
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_name(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_name": "DMP_110"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
 
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
+    it.only("Room_name(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_name": "*DMP_110"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
 
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_name(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_name": "*DMP_110*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
 
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_furniture(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_furniture": "Classroom-Fixed Tablets"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_furniture(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_furniture": "*Classroom-Fixed Tablets"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_furniture(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_furniture": "Classroom-Fixed Tablets*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_furniture(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_furniture": "*Classroom-Fixed Tablets*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
+    it.only("Room_Type(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_type": "Tiered Large Group"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_Type(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_type": "*Tiered Large Group"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_Type(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_type": "Tiered Large Group*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
+    it.only("Room_Type(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_type": "*Tiered Large Group*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_fullname(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_fullname": "Hugh Dempster Pavilion"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_fullname(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_fullname": "*Hugh Dempster Pavilion"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
+    it.only("Room_fullname(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_fullname": "Hugh Dempster Pavilion*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_fullname(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_fullname": "*Hugh Dempster Pavilion*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_number(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_number": "201"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_number(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_number": "*201"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_number(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_number": "201*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_number(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_number": "*201*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_shortname(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_shortname": "*DMP"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
 
+    it.only("Room_shortname(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_shortname": "DMP*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_shortname(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_shortname": "*DMP*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_shortname(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_shortname": "DMP"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_shortname(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_shortname": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+
+    it.only("Room_fullname(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_fullname": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+
+    it.only("rooms_number(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_number": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("rooms_name(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_name": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("rooms_address(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_address": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("rooms_type(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_type": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("rooms_furniture(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_furniture": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("rooms_href(IS) is400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_href": 123
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    it.only("Room_href(IS) pass 200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_href(IS) pass *200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_href": "*http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_href(IS) pass 200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("Room_href(IS) pass *200* ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "IS": {
+                    "rooms_href": "*http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201*"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    //------------------
+    it.only("Room_lat eq200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "rooms_lat": 49.26541
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_lat eq400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "rooms_lat": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+//----------------------
+    it.only("Room_lat lt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "rooms_lat": 100
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_lat lt400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "rooms_lat": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+//----------
+    it.only("Room_lat gt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "rooms_lat": 30
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_lat gt400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "rooms_lat": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    //------------
+    it.only("Room_lon eq200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "rooms_lon": -123.25623
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_lon eq400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "rooms_lon": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    //-----------
+    it.only("Room_lon lt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "rooms_lon": -100
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_lon lt400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "rooms_lon": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    //-------------
+
+    it.only("Room_lon gt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "rooms_lon": -127
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_lon gt400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "rooms_lon": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    //--------------
+    it.only("Room_seats eq200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "rooms_seats": 100
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_seats eq400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "EQ": {
+                    "rooms_seats": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+//--------------
+    it.only("Room_seats lt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "rooms_seats": 1000
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_seats lt400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "LT": {
+                    "rooms_seats": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+    //--------------------
+    it.only("Room_seats gt200 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "rooms_seats": 30
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("Room_seats gt400 ", function () {
+        var f1 = new InsightFacade();
+        var q1 = {
+            "WHERE": {
+                "GT": {
+                    "rooms_seats": "ssa"
+                }
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_name"
+                ],
+                "ORDER": "rooms_name",
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
+
+//---------------
+    it.only("removeDataset204", function () {
+        var f1 = new InsightFacade();
+        return f1.removeDataset("rooms").then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(204);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("removeDataset404", function () {
+        var f1 = new InsightFacade();
+        return f1.removeDataset("rooms").then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(404);
+        })
+    });
+    it.only("removeDataset204", function () {
+        var f1 = new InsightFacade();
+        return f1.removeDataset("courses").then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(204);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("removeDataset404", function () {
+        var f1 = new InsightFacade();
+        return f1.removeDataset("courses").then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(404);
+        })
+    });
+    it.only("no source 424", function () {
+        var f1 = new InsightFacade();
+        let q1:QueryRequest = {
+            "WHERE":{
+                "GT":{
+                    "courses_avg":97.6
+                }
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "courses_dept",
+                    "courses_fail"
+                ],
+                "ORDER":"courses_avg",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(424);
+
+        })
+    });
+    it.only("rooms no source 424", function () {
+        var f1 = new InsightFacade();
+        let q1:QueryRequest = {
+            "WHERE":{
+                "GT":{
+                    "rooms_seats":40
+                }
+            },
+            "OPTIONS":{
+                "COLUMNS":[
+                    "rooms_seats",
+                    "rooms_name"
+                ],
+                "ORDER":"rooms_seats",
+                "FORM":"TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(424);
+
+        })
+    });
 
 });
-

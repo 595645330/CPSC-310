@@ -4269,7 +4269,7 @@ describe("Test1", function () {
             },
             "OPTIONS":{
                 "COLUMNS":[
-                    "courses_dept",
+                    "courses_avg",
                     "courses_fail"
                 ],
                 "ORDER":"courses_avg",

@@ -255,6 +255,12 @@ export default class InsightFacade implements IInsightFacade {
                     })
                 });
             }
+            else{
+                reject({
+                    "code": 400,
+                    "body": {"error": "the operation was unsuccessful because the delete was for a resource that was not previously added."}
+                })
+            }
         });
     }
 

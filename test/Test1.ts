@@ -49,8 +49,6 @@ describe("Test1", function () {
     }
 
 
-
-
     it.only("addDatasetNew204", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("rooms",getBase85()).then(function(response:InsightResponse) {
@@ -96,6 +94,240 @@ describe("Test1", function () {
     });
 
 
+    it.only("D3 test1", function () {
+        var f1 = new InsightFacade();
+        var q1:any = {
+            "WHERE": {},
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_furniture"
+                ],
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_furniture"],
+                "APPLY": []
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("D3 test2", function () {
+        var f1 = new InsightFacade();
+        var q1:any ={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 300
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_shortname"
+                ],
+
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_shortname"],
+                "APPLY": []
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("D3 test3", function () {
+        var f1 = new InsightFacade();
+        var q1:any ={
+            "WHERE": {
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_seats",
+                    "rooms_shortname"
+
+                ],
+                "ORDER":"rooms_seats",
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_seats","rooms_shortname"],
+                "APPLY": []
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("D3 test4", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_seats",
+                    "rooms_shortname",
+                    "rooms_lat"
+                ],
+                "ORDER":{ "dir": "UP",
+                    "keys": ["rooms_seats","rooms_lat"]},
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("D3 test5", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_shortname",
+                    "maxSeats"
+                ],
+                "ORDER": {
+                    "dir": "DOWN",
+                    "keys": ["maxSeats"]
+                },
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_shortname"],
+                "APPLY": [{
+                    "maxSeats": {
+                        "MAX": "rooms_seats"
+                    }
+                }]
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("D3 test8", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_shortname",
+                    "avgSeats"
+                ],
+                "ORDER": {
+                    "dir": "DOWN",
+                    "keys": ["avgSeats"]
+                },
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_shortname"],
+                "APPLY": [{
+                    "avgSeats": {
+                        "SUM": "rooms_seats"
+                    }
+                }]
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+    it.only("D3 test6", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_seats",
+                    "rooms_shortname"
+                ],
+                "ORDER": {
+                    "dir": "DOWN",
+                    "keys": ["rooms_shortname"]
+                },
+                "FORM": "TABLE"
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+
+
     let server:Server = null;
     server = new Server(3000);
 
@@ -116,6 +348,8 @@ describe("Test1", function () {
             console.log(err);
         })
     });
+
+
 
     it.only("server off after on", function () {
         return server.stop().then(function (torf: boolean) {
@@ -175,7 +409,16 @@ describe("Test1", function () {
             expect.fail();
         })
     });
-
+    it.only("addDataset404 because id wrong.", function () {
+        var f1 = new InsightFacade();
+        return f1.addDataset("ghjghjghj",getBase64()).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response.code);
+            expect.fail();
+        }).catch(function (err) {
+            console.log(err);
+            expect(err["code"]).to.equal(400);
+        })
+    });
     it.only("addDatasetOld201 cour", function () {
         var f1 = new InsightFacade();
         return f1.addDataset("courses",getBase64()).then(function(response:InsightResponse) {
@@ -210,7 +453,7 @@ describe("Test1", function () {
     //---------------
     it.only("where option 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": 12}
             },
@@ -235,7 +478,7 @@ describe("Test1", function () {
 
     it.only("option wrong 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": 12}
             },
@@ -260,7 +503,7 @@ describe("Test1", function () {
 
     it.only("column not array wrong 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": 12}
             },
@@ -282,7 +525,7 @@ describe("Test1", function () {
 
     it.only("form not table 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": 12}
             },
@@ -306,7 +549,7 @@ describe("Test1", function () {
 
     it.only("order wrong 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": 12}
             },
@@ -330,7 +573,7 @@ describe("Test1", function () {
     //-------------
     it.only("LT 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"ty_fail": 12}
             },
@@ -355,7 +598,7 @@ describe("Test1", function () {
 
     it.only("EQ 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"ty_fail": 12}
             },
@@ -380,7 +623,7 @@ describe("Test1", function () {
 
     it.only("IS 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"ty_dept": "adhe"}
             },
@@ -405,7 +648,7 @@ describe("Test1", function () {
 
     it.only("AND 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"AND":[
                 {"LT": {"ty_fail": 12}}]
             },
@@ -430,7 +673,7 @@ describe("Test1", function () {
 
     it.only("OR 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"OR":[
                 {"LT": {"ty_fail": 12}}]
             },
@@ -455,7 +698,7 @@ describe("Test1", function () {
 
     it.only("NOT 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"LT": {"ty_fail": 12}}
             },
@@ -481,7 +724,7 @@ describe("Test1", function () {
 //-----------
     it.only("GT pass 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_pass": "s"}
             },
@@ -506,7 +749,7 @@ describe("Test1", function () {
 
     it.only("GT pass 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_pass": 0}
             },
@@ -531,7 +774,7 @@ describe("Test1", function () {
 
     it.only("GT fail 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_fail": "s"}
             },
@@ -556,7 +799,7 @@ describe("Test1", function () {
 
     it.only("GT fail 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_fail": 0}
             },
@@ -581,7 +824,7 @@ describe("Test1", function () {
 
     it.only("GT audit 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_audit": "s"}
             },
@@ -606,7 +849,7 @@ describe("Test1", function () {
 
     it.only("GT audit 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_audit": 0}
             },
@@ -631,7 +874,7 @@ describe("Test1", function () {
 
     it.only("GT course key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {"courses_asdas": 0}
             },
@@ -656,7 +899,7 @@ describe("Test1", function () {
     //--------------------
     it.only("LT not object 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": 12
             },
@@ -681,7 +924,7 @@ describe("Test1", function () {
 
     it.only("LT pass 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_pass": "s"}
             },
@@ -706,7 +949,7 @@ describe("Test1", function () {
 
     it.only("LT pass 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_pass": 100}
             },
@@ -731,7 +974,7 @@ describe("Test1", function () {
 
     it.only("LT fail 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": "s"}
             },
@@ -756,7 +999,7 @@ describe("Test1", function () {
 
     it.only("LT fail 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_fail": 100}
             },
@@ -782,7 +1025,7 @@ describe("Test1", function () {
 
     it.only("LT audit 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_audit": "s"}
             },
@@ -807,7 +1050,7 @@ describe("Test1", function () {
 
     it.only("LT audit 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_audit": 100}
             },
@@ -832,7 +1075,7 @@ describe("Test1", function () {
 
     it.only("LT course key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {"courses_asdas": 0}
             },
@@ -858,7 +1101,7 @@ describe("Test1", function () {
 
     it.only("EQ not object 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": 12
             },
@@ -883,7 +1126,7 @@ describe("Test1", function () {
 
     it.only("EQ avg 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_avg": "s"}
             },
@@ -908,7 +1151,7 @@ describe("Test1", function () {
 
     it.only("EQ pass 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_pass": "s"}
             },
@@ -933,7 +1176,7 @@ describe("Test1", function () {
 
     it.only("EQ pass 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_pass": 90}
             },
@@ -958,7 +1201,7 @@ describe("Test1", function () {
 
     it.only("EQ fail 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_fail": "s"}
             },
@@ -983,7 +1226,7 @@ describe("Test1", function () {
 
     it.only("EQ fail 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_fail": 10}
             },
@@ -1008,7 +1251,7 @@ describe("Test1", function () {
 
     it.only("EQ audit 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_audit": "s"}
             },
@@ -1033,7 +1276,7 @@ describe("Test1", function () {
 
     it.only("EQ wrong key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_ausadas": 12}
             },
@@ -1058,7 +1301,7 @@ describe("Test1", function () {
     // ------------------
     it.only("is not obj 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": 23
             },
@@ -1083,7 +1326,7 @@ describe("Test1", function () {
 
     it.only("is dept 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_dept": 12}
             },
@@ -1108,7 +1351,7 @@ describe("Test1", function () {
 
     it.only("is id 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_id": 12}
             },
@@ -1133,7 +1376,7 @@ describe("Test1", function () {
 
     it.only("is *id 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_id": "*203"}
             },
@@ -1158,7 +1401,7 @@ describe("Test1", function () {
 
     it.only("is id* 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_id": "203*"}
             },
@@ -1183,7 +1426,7 @@ describe("Test1", function () {
 
     it.only("is instr 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_instructor": 12}
             },
@@ -1208,7 +1451,7 @@ describe("Test1", function () {
 
     it.only("is instr 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_instructor": "johnson, shelly"}
             },
@@ -1234,7 +1477,7 @@ describe("Test1", function () {
 
     it.only("is instr 200*", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_instructor": "johnso*"}
             },
@@ -1259,7 +1502,7 @@ describe("Test1", function () {
 
     it.only("is title 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_title": 12}
             },
@@ -1284,7 +1527,7 @@ describe("Test1", function () {
 
     it.only("is title 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_title": "fst ntns soc iss"}
             },
@@ -1309,7 +1552,7 @@ describe("Test1", function () {
 
     it.only("is uuid 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_uuid": 12}
             },
@@ -1334,7 +1577,7 @@ describe("Test1", function () {
 
     it.only("is uuid 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_uuid": "71674"}
             },
@@ -1359,7 +1602,7 @@ describe("Test1", function () {
 
     it.only("is uuid *200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_uuid": "*1674"}
             },
@@ -1385,7 +1628,7 @@ describe("Test1", function () {
 
     it.only("is uuid 200*", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_uuid": "7167*"}
             },
@@ -1410,7 +1653,7 @@ describe("Test1", function () {
 
     it.only("is uuid *200*", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_uuid": "*167*"}
             },
@@ -1435,7 +1678,7 @@ describe("Test1", function () {
     //--------------------
     it.only("EQ audit 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {"courses_audit": 0}
             },
@@ -1460,7 +1703,7 @@ describe("Test1", function () {
 
     it.only("line 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "AND" : [
                     {"EQ": {"courses_audit": 0}},
@@ -1505,7 +1748,7 @@ describe("Test1", function () {
 
     it.only("Dept 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_dept": "cpsc"}
             },
@@ -1530,7 +1773,7 @@ describe("Test1", function () {
 
     it.only("EQ avg 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":{
                 "EQ":{
                     "courses_avg":97
@@ -1556,7 +1799,7 @@ describe("Test1", function () {
 
     it.only("No order 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":{
                 "IS":{
                     "courses_dept":"cpsc"
@@ -1582,7 +1825,7 @@ describe("Test1", function () {
 
     it.only("Sort string 200", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any = {
             "WHERE":{
                 "GT":{
                     "courses_avg":97.6
@@ -1610,7 +1853,7 @@ describe("Test1", function () {
 
     it.only("Instructor Partial String content 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_instructor": "*ave*"}
             },
@@ -1635,7 +1878,7 @@ describe("Test1", function () {
 
     it.only("order not in colum 400", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any= {
             "WHERE":{
                 "GT":{
                     "courses_avg":97.6
@@ -1662,7 +1905,7 @@ describe("Test1", function () {
 
     it.only("Partial instructor *ave* 200(no order)", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_instructor": "*ave*"}
             },
@@ -1685,7 +1928,7 @@ describe("Test1", function () {
 
     it.only("partial dept *ad 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_dept": "*ad"}
             },
@@ -1709,7 +1952,7 @@ describe("Test1", function () {
 
     it.only("partial dept st* 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_dept": "st*"}
             },
@@ -1733,7 +1976,7 @@ describe("Test1", function () {
 
     it.only("wrong key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {"courses_kkk": "*ave*"}
             },
@@ -1758,7 +2001,7 @@ describe("Test1", function () {
 
     it.only("empty or 400", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any = {
             "WHERE": {
                 "OR": []
             },
@@ -1783,7 +2026,7 @@ describe("Test1", function () {
 
     it.only("wrongQuery400", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any = {
             "WHERE":21,
             "OPTIONS":5656
         }
@@ -1799,7 +2042,7 @@ describe("Test1", function () {
 
     it.only("invalid order ", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any = {
             "WHERE":{
                 "GT":{
                     "courses_avg":97.6
@@ -1826,7 +2069,7 @@ describe("Test1", function () {
 
     it.only("not not 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "courses_avg": 90
@@ -1854,7 +2097,7 @@ describe("Test1", function () {
 
     // it.only("not not200", function () {
     //     var f1 = new InsightFacade();
-    //     var q1 = {
+    //     var q1:any = {
     //         "WHERE": {
     //             "NOT": {
     //                 "OR": [
@@ -1897,7 +2140,7 @@ describe("Test1", function () {
     // });
     it.only("AND AND 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":{
                 "AND":[
                     {
@@ -1941,7 +2184,7 @@ describe("Test1", function () {
 
     it.only("AND 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":
                 {
                     "AND": [
@@ -1977,7 +2220,7 @@ describe("Test1", function () {
 
     it.only("missing source 424", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":{
                 "OR":[
                     {
@@ -2021,7 +2264,7 @@ describe("Test1", function () {
 
     it.only("nested AND 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":{
                 "AND":[
                     {
@@ -2066,7 +2309,7 @@ describe("Test1", function () {
 
     it.only("complex 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE":{
                 "OR":[
                     {
@@ -2112,7 +2355,7 @@ describe("Test1", function () {
 
     it.only("not GT 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"GT":{
                     "courses_avg":1
@@ -2139,7 +2382,7 @@ describe("Test1", function () {
 
     it.only("not EQ 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"EQ":{
                     "courses_avg":"ghg"
@@ -2166,7 +2409,7 @@ describe("Test1", function () {
 
     it.only("not OR 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"OR":[3]}
             },
@@ -2191,7 +2434,7 @@ describe("Test1", function () {
 
     it.only("not wrong key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"asd":90}
             },
@@ -2216,7 +2459,7 @@ describe("Test1", function () {
 
     it.only("and not an array followed 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"AND":1231
             },
             "OPTIONS":{
@@ -2240,7 +2483,7 @@ describe("Test1", function () {
 
     it.only("OR catch err 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"OR":[{"as":"as"}]
             },
             "OPTIONS":{
@@ -2263,7 +2506,7 @@ describe("Test1", function () {
     });
     it.only("where wrong key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"asd":12
             },
             "OPTIONS":{
@@ -2287,7 +2530,7 @@ describe("Test1", function () {
 
     it.only("not wrong course key 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"IS":{"courses_deptsadas":"adhe"}}
             },
@@ -2312,7 +2555,7 @@ describe("Test1", function () {
 
     it.only("not OR 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {
                     "OR":[
@@ -2359,7 +2602,7 @@ describe("Test1", function () {
 
     it.only("not not 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT": {"NOT":
                 {"LT":{
                     "courses_avg":"hj"
@@ -2386,7 +2629,7 @@ describe("Test1", function () {
     //--------------
     it.only("not not 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT": {"NOT":
                 {"LT":{
                     "courses_avg":97
@@ -2413,7 +2656,7 @@ describe("Test1", function () {
 
     it.only("not 400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"AND": [{"NOT":
                 {"EQ":{
                     "courses_avg":97
@@ -2468,7 +2711,7 @@ describe("Test1", function () {
 
     it.only("is 200", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"OR": [
                 {"IS":{
                     "courses_title":"*soc*"
@@ -2509,7 +2752,7 @@ describe("Test1", function () {
 
     it.only("is 200 second", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"OR": [
                 {"IS":{
                     "courses_dept":"adhe"
@@ -2591,7 +2834,7 @@ describe("Test1", function () {
     });
     it.only("not lt400", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {"NOT":
                 {"GT":{
                     "courses_avg":"ss"
@@ -2619,7 +2862,7 @@ describe("Test1", function () {
 
     it.only("courses year gt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "courses_year": 1900
@@ -2643,7 +2886,7 @@ describe("Test1", function () {
     });
     it.only("courses year gt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "courses_year": "2"
@@ -2668,7 +2911,7 @@ describe("Test1", function () {
 
     it.only("courses year lt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "courses_year": 2000
@@ -2692,7 +2935,7 @@ describe("Test1", function () {
     });
     it.only("courses year LT400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "courses_year": "2"
@@ -2716,7 +2959,7 @@ describe("Test1", function () {
     });
     it.only("courses year eq200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "courses_year": 1900
@@ -2740,7 +2983,7 @@ describe("Test1", function () {
     });
     it.only("courses year eq400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "courses_year": "2"
@@ -2765,7 +3008,7 @@ describe("Test1", function () {
     //-----------------------------------------------------------
     it.only("400 2 sources ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "AND": [
                     {
@@ -2798,7 +3041,7 @@ describe("Test1", function () {
     });
     it.only("Room_address(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_address": "*Agrono*"
@@ -2821,7 +3064,7 @@ describe("Test1", function () {
     });
     it.only("Room_address(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_address": "1984 West Mall"
@@ -2844,7 +3087,7 @@ describe("Test1", function () {
     });
     it.only("Room_address(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_address": "*1984 West Mall"
@@ -2867,7 +3110,7 @@ describe("Test1", function () {
     });
     it.only("Room_address(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_address": "1984 West Mall*"
@@ -2891,7 +3134,7 @@ describe("Test1", function () {
 
     it.only("Room_name(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_name": "DMP_*"
@@ -2916,7 +3159,7 @@ describe("Test1", function () {
     });
     it.only("Room_name(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_name": "DMP_110"
@@ -2942,7 +3185,7 @@ describe("Test1", function () {
 
     it.only("Room_name(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_name": "*DMP_110"
@@ -2967,7 +3210,7 @@ describe("Test1", function () {
     });
     it.only("Room_name(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_name": "*DMP_110*"
@@ -2992,7 +3235,7 @@ describe("Test1", function () {
     });
     it.only("Room_furniture(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_furniture": "Classroom-Fixed Tablets"
@@ -3016,7 +3259,7 @@ describe("Test1", function () {
     });
     it.only("Room_furniture(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_furniture": "*Classroom-Fixed Tablets"
@@ -3040,7 +3283,7 @@ describe("Test1", function () {
     });
     it.only("Room_furniture(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_furniture": "Classroom-Fixed Tablets*"
@@ -3064,7 +3307,7 @@ describe("Test1", function () {
     });
     it.only("Room_furniture(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_furniture": "*Classroom-Fixed Tablets*"
@@ -3089,7 +3332,7 @@ describe("Test1", function () {
 
     it.only("Room_Type(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_type": "Tiered Large Group"
@@ -3113,7 +3356,7 @@ describe("Test1", function () {
     });
     it.only("Room_Type(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_type": "*Tiered Large Group"
@@ -3137,7 +3380,7 @@ describe("Test1", function () {
     });
     it.only("Room_Type(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_type": "Tiered Large Group*"
@@ -3162,7 +3405,7 @@ describe("Test1", function () {
 
     it.only("Room_Type(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_type": "*Tiered Large Group*"
@@ -3186,7 +3429,7 @@ describe("Test1", function () {
     });
     it.only("Room_fullname(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_fullname": "Hugh Dempster Pavilion"
@@ -3210,7 +3453,7 @@ describe("Test1", function () {
     });
     it.only("Room_fullname(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_fullname": "*Hugh Dempster Pavilion"
@@ -3235,7 +3478,7 @@ describe("Test1", function () {
 
     it.only("Room_fullname(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_fullname": "Hugh Dempster Pavilion*"
@@ -3259,7 +3502,7 @@ describe("Test1", function () {
     });
     it.only("Room_fullname(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_fullname": "*Hugh Dempster Pavilion*"
@@ -3283,7 +3526,7 @@ describe("Test1", function () {
     });
     it.only("Room_number(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_number": "201"
@@ -3307,7 +3550,7 @@ describe("Test1", function () {
     });
     it.only("Room_number(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_number": "*201"
@@ -3331,7 +3574,7 @@ describe("Test1", function () {
     });
     it.only("Room_number(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_number": "201*"
@@ -3355,7 +3598,7 @@ describe("Test1", function () {
     });
     it.only("Room_number(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_number": "*201*"
@@ -3379,7 +3622,7 @@ describe("Test1", function () {
     });
     it.only("Room_shortname(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_shortname": "*DMP"
@@ -3404,7 +3647,7 @@ describe("Test1", function () {
 
     it.only("Room_shortname(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_shortname": "DMP*"
@@ -3428,7 +3671,7 @@ describe("Test1", function () {
     });
     it.only("Room_shortname(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_shortname": "*DMP*"
@@ -3452,7 +3695,7 @@ describe("Test1", function () {
     });
     it.only("Room_shortname(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_shortname": "DMP"
@@ -3476,7 +3719,7 @@ describe("Test1", function () {
     });
     it.only("Room_shortname(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_shortname": 123
@@ -3501,7 +3744,7 @@ describe("Test1", function () {
 
     it.only("Room_fullname(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_fullname": 123
@@ -3526,7 +3769,7 @@ describe("Test1", function () {
 
     it.only("rooms_number(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_number": 123
@@ -3550,7 +3793,7 @@ describe("Test1", function () {
     });
     it.only("rooms_name(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_name": 123
@@ -3574,7 +3817,7 @@ describe("Test1", function () {
     });
     it.only("rooms_address(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_address": 123
@@ -3598,7 +3841,7 @@ describe("Test1", function () {
     });
     it.only("rooms_type(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_type": 123
@@ -3622,7 +3865,7 @@ describe("Test1", function () {
     });
     it.only("rooms_furniture(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_furniture": 123
@@ -3646,7 +3889,7 @@ describe("Test1", function () {
     });
     it.only("rooms_href(IS) is400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_href": 123
@@ -3670,7 +3913,7 @@ describe("Test1", function () {
     });
     it.only("Room_href(IS) pass 200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
@@ -3694,7 +3937,7 @@ describe("Test1", function () {
     });
     it.only("Room_href(IS) pass *200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_href": "*http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
@@ -3718,7 +3961,7 @@ describe("Test1", function () {
     });
     it.only("Room_href(IS) pass 200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_href": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201*"
@@ -3742,7 +3985,7 @@ describe("Test1", function () {
     });
     it.only("Room_href(IS) pass *200* ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "IS": {
                     "rooms_href": "*http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201*"
@@ -3767,7 +4010,7 @@ describe("Test1", function () {
     //------------------
     it.only("Room_lat eq200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "rooms_lat": 49.26541
@@ -3792,7 +4035,7 @@ describe("Test1", function () {
 
     it.only("Room_lat eq400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "rooms_lat": "ssa"
@@ -3817,7 +4060,7 @@ describe("Test1", function () {
 //----------------------
     it.only("Room_lat lt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "rooms_lat": 100
@@ -3842,7 +4085,7 @@ describe("Test1", function () {
 
     it.only("Room_lat lt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "rooms_lat": "ssa"
@@ -3867,7 +4110,7 @@ describe("Test1", function () {
 //----------
     it.only("Room_lat gt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "rooms_lat": 30
@@ -3892,7 +4135,7 @@ describe("Test1", function () {
 
     it.only("Room_lat gt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "rooms_lat": "ssa"
@@ -3917,7 +4160,7 @@ describe("Test1", function () {
     //------------
     it.only("Room_lon eq200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "rooms_lon": -123.25623
@@ -3942,7 +4185,7 @@ describe("Test1", function () {
 
     it.only("Room_lon eq400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "rooms_lon": "ssa"
@@ -3967,7 +4210,7 @@ describe("Test1", function () {
     //-----------
     it.only("Room_lon lt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "rooms_lon": -100
@@ -3992,7 +4235,7 @@ describe("Test1", function () {
 
     it.only("Room_lon lt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "rooms_lon": "ssa"
@@ -4018,7 +4261,7 @@ describe("Test1", function () {
 
     it.only("Room_lon gt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "rooms_lon": -127
@@ -4043,7 +4286,7 @@ describe("Test1", function () {
 
     it.only("Room_lon gt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "rooms_lon": "ssa"
@@ -4068,7 +4311,7 @@ describe("Test1", function () {
     //--------------
     it.only("Room_seats eq200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "rooms_seats": 100
@@ -4093,7 +4336,7 @@ describe("Test1", function () {
 
     it.only("Room_seats eq400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "EQ": {
                     "rooms_seats": "ssa"
@@ -4118,7 +4361,7 @@ describe("Test1", function () {
 //--------------
     it.only("Room_seats lt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "rooms_seats": 1000
@@ -4143,7 +4386,7 @@ describe("Test1", function () {
 
     it.only("Room_seats lt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "LT": {
                     "rooms_seats": "ssa"
@@ -4168,7 +4411,7 @@ describe("Test1", function () {
     //--------------------
     it.only("Room_seats gt200 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "rooms_seats": 30
@@ -4193,7 +4436,7 @@ describe("Test1", function () {
 
     it.only("Room_seats gt400 ", function () {
         var f1 = new InsightFacade();
-        var q1 = {
+        var q1:any = {
             "WHERE": {
                 "GT": {
                     "rooms_seats": "ssa"
@@ -4261,7 +4504,7 @@ describe("Test1", function () {
     });
     it.only("no source 424", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any= {
             "WHERE":{
                 "GT":{
                     "courses_avg":97.6
@@ -4287,7 +4530,7 @@ describe("Test1", function () {
     });
     it.only("rooms no source 424", function () {
         var f1 = new InsightFacade();
-        let q1:QueryRequest = {
+        var q1:any = {
             "WHERE":{
                 "GT":{
                     "rooms_seats":40

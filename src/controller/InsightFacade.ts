@@ -138,7 +138,6 @@ export default class InsightFacade implements IInsightFacade {
                                 listOfBuilding.push(listOfBoth[i]);
                             }
                         }
-                        // console.log(listOfBuilding);
                         for (let build of listOfBuilding) {
                             for(let key of Object.keys(files)){
                                 let file: any = files[key];
@@ -150,7 +149,6 @@ export default class InsightFacade implements IInsightFacade {
                         }
                         //----------------------------------------------------------------------------------------------------------
                         Promise.all(processList).then(function (nums: string[]) {
-
                             for (let num of nums) {
                                 if (num !== undefined && num.length !== 0) {
                                     const parse5 = require('parse5');
@@ -166,7 +164,6 @@ export default class InsightFacade implements IInsightFacade {
                                     }
                                 }
                             }
-                            // console.log(listOfFullName.length);
                             //--------------------------------------------------------------------------
                             for(let array of listOfhref){
                                 if(array.length===0){
@@ -187,13 +184,6 @@ export default class InsightFacade implements IInsightFacade {
                                     listOfLat.push(element["lat"]);
                                     listOfLon.push(element["lon"]);
                                 }
-                                // console.log(listOfFullName.length);
-                                // console.log(listOfRoom.length);
-                                // console.log(listOfType.length)
-                                // console.log(listOfFurniture.length)
-                                // console.log(listOfSeats.length)
-                                // console.log(listOfAddress.length)
-
                                 for (let i:any= 0;i<listOfBuilding.length;i++) {
                                     if(listOfRoom[i].length!==0){
                                         for(let j:any =0; j<listOfRoom[i].length;j++){
@@ -213,7 +203,6 @@ export default class InsightFacade implements IInsightFacade {
                                             lists.push(obj);
                                         }}
                                 }
-
                                 if (lists.length === 0) {
                                     throw new Error();
                                 }
@@ -285,155 +274,387 @@ export default class InsightFacade implements IInsightFacade {
         let that = this;
         return new Promise(function (fulfill, reject) {
             var fs = require("fs");
-            var JSZip = require("jszip");
             let output: any = {};
             let order: any = "";
             let listsOfColumn: any [] = [];
             let listOfCourses: any [] = [];
             let listOfUUID: any [] = [];
+            let listOfUnderscore: any [] = [];
+            let listOfNounderscore: any [] = [];
             let ifPass:any = true;
             let where1: any;
             let option1: any;
+            let trans1:any;
+            let group1:any;
+            let apply1:any;
+            let ifTrans: any = false;
+            let ifEmptyWhere: any = false;
+            let ifOrderDir:any = false;
+            let direction:any = "DOWN";
+            let listOfOrder:any []=[];
+            let listOfApplyKey:any [] =[];
+            let listOfkeys1:any []= [];
+            let listOfkeys2:any []= [];
+            let listOfkeys3:any []= [];
             let readfilename:any;
-            let helpera = new Helper();
+            let helper = new Helper();
 
+            //Check if the query has both rooms and courses inside, if so return 400
             if (JSON.stringify(query).includes("rooms_") && JSON.stringify(query).includes("courses_")) {
                 reject({"code":400,"body":{"error": "2 sources in a query"}});
                 ifPass=false;
             }
-
-            if(ifPass &&!(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2)){
-                reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
-                ifPass=false;
-            }
+            //Check if the first key of query if is where and second if is options and total length if is 2
             if(ifPass){
-                where1= query["WHERE"];
-                option1= query["OPTIONS"];
+                if(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS' && (Object.keys(query)).length === 2){
+                    where1= query["WHERE"];
+                    option1= query["OPTIONS"];
+                }
+                else if(Object.keys(query)[0] === 'WHERE' && Object.keys(query)[1] === 'OPTIONS'&& Object.keys(query)[2] === 'TRANSFORMATIONS' && (Object.keys(query)).length === 3){
+                    where1= query["WHERE"];
+                    option1= query["OPTIONS"];
+                    trans1= query["TRANSFORMATIONS"];
+                    ifTrans=true;
+                    if(Object.keys(trans1)[0] !=="GROUP" || Object.keys(trans1)[1] !=="APPLY"){
+                        reject({"code":400,"body":{"error":"Transformations needs to contains both GROUP and APPLY"}});
+                        ifPass=false;
+                    }
+                    else{
+                        group1=trans1["GROUP"];
+                        apply1=trans1["APPLY"];
+                        try{
+                            for(let element of apply1){
+                                let a1:any =Object.keys(element)[0];
+                                listOfkeys1.push(a1);
+                                let a2:any =Object.keys(element[a1])[0];
+                                listOfkeys2.push(a2);
+                                let a3:any =element[a1][a2];
+                                listOfkeys3.push(a3)
+                            }
+                            if(!(group1 instanceof Array)||!(apply1 instanceof Array)||!helper.checkValid(group1)||!helper.checkApply(listOfkeys1,listOfkeys2,listOfkeys3)){
+                                throw new Error();
+                            }
+                        }catch(e){
+                            reject({"code":400,"body":{"error":"group and apply not valid"}});
+                            ifPass=false;
+                        }
+                    }
+                }
+                else{
+                    reject({"code":400,"body":{"error": "invalid query, no WHERE or OPTIONS"}})
+                    ifPass=false;
+                }
             }
 
-            //---------------------------------------------------------------
+            //------------------------------------------------------------------------------------------------------------------------------
+            //Check if the where is type of Object
             if(ifPass &&!(where1 instanceof Object)){
                 reject({"code":400,"body":{"error": "Where wrong"}});
                 ifPass=false;
             }
+            if(ifPass &&Object.keys(where1).length === 0){
+                ifEmptyWhere=true;
+            }
+            //Check if the first key of Options is COLUMN and second is ORDER third is FORM, or first is COLUMNS and second is FORM
             if (ifPass &&!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
                 && !(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
                 reject({"code":400,"body":{"error": "OPTIONS wrong"}});
                 ifPass=false;
             }
+            //Check if the COLUMNS is type is Array
             if (ifPass &&!((option1["COLUMNS"])instanceof Array) || ((option1["COLUMNS"]).length ===0)) {
                 reject({"code":400,"body":{"error": "columns not a list or is empty"}});
                 ifPass=false;
             }
+            //Check if Column is valid
             if(ifPass) {
                 for (let a of option1["COLUMNS"]) {
+                    if(a.indexOf("_") !== -1){
+                        listOfUnderscore.push(a);
+                    }
+                    else{
+                        listOfNounderscore.push(a);
+                    }
                     listsOfColumn.push(a);
                 }
                 //------------------------------------------------------------------
-                for (let loc of listsOfColumn) {
-                    if (!(loc === "courses_dept") && !(loc === "courses_id")
-                        && !(loc === "courses_avg") && !(loc === "courses_instructor") && !(loc === "courses_title") && !(loc === "courses_year")
-                        && !(loc === "courses_pass") && !(loc === "courses_fail") && !(loc === "courses_audit") && !(loc === "courses_uuid")
-                        && !(loc === "rooms_fullname") && !(loc === "rooms_shortname") && !(loc === "rooms_number") && !(loc === "rooms_name")
-                        && !(loc === "rooms_address") && !(loc === "rooms_lat" ) && !(loc === "rooms_lon") && !(loc === "rooms_seats")
-                        && !(loc === "rooms_type") && !(loc === "rooms_furniture") && !(loc === "rooms_href")) {
+
+
+                if(listOfUnderscore.length!==0){
+                    if(!helper.checkValid(listOfUnderscore)) {
                         reject({"code": 400, "body": {"error": "wrong column"}});
                         ifPass=false;
+                    }else{
+                        if(ifTrans){
+                            for(let b of listOfUnderscore){
+                                if(!group1.includes(b)){
+                                    reject({"code":400,"body":{"error":"All COLUMNS keys need to be either in GROUP or in APPLY"}});
+                                    ifPass=false;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
+                if(ifPass&&listOfNounderscore.length!==0){
+                    for(let b of listOfNounderscore){
+                        if(!listOfkeys1.includes(b)){
+                            reject({"code":400,"body":{"error":"All COLUMNS keys need to be either in GROUP or in APPLY"}});
+                            ifPass=false;
+                            break;
+                        }
+                    }
+                }
+
             }
+            //Check if the Form is valid
             if (ifPass &&!(option1["FORM"] === "TABLE")) {
                 reject({"code":400,"body":{"error": "FORM not TABLE"}});
                 ifPass=false;
             }
+            //Give the render value
             if(ifPass){
                 output.render = option1["FORM"];
             }
+            //define order
             if(ifPass &&Object.keys(option1)[1] === "ORDER"){
                 order = option1["ORDER"];
-            }
-
-            if (ifPass &&!(listsOfColumn.includes(order)) && (order!=="")) {
-                reject({"code":400,"body":{"error": "order not in column"}});
-                ifPass=false;
-            }
-
-            let helperb = new Helper();
-            // console.log("checker number " + helperb.check(where1));
-            let checknum:any=helpera.check(where1);
-            if (ifPass && checknum=== 1) {
-                try {
-                    fs.readFileSync('courses.txt', "utf-8").toString()
-                    readfilename = "courses.txt";
+                if(order instanceof Object ){
+                    ifOrderDir=true;
+                    direction=order["dir"];
+                    listOfOrder=order["keys"];
+                    if(direction!=="DOWN"&&direction!=="UP"){
+                        reject({"code":400,"body":{"error": "direction is not valid"}});
+                        ifPass=false;
+                    }
                 }
-                catch (err) {
-                    reject({"code": 424, "body": {"missing": ["courses"]}});
+                else{
+                    direction="DOWN";
+                    listOfOrder=listOfOrder.concat(order);
+                }
+                if(ifPass){
+                    for(let everyOrder of listOfOrder){
+                        if(!(listsOfColumn.includes(everyOrder))){
+                            reject({"code":400,"body":{"error": "order not in column"}});
+                            ifPass=false;
+                        }
+                    }
+                }
+            }
+            //----------------------------------------------------------------------------------------------------------
+
+            //-------------------------------------------------------------------------------------------------------------------
+            //Check if what dataset inside the query
+            //course dataset
+            if(ifPass && ifEmptyWhere===false){
+                let checknum:any=helper.check(where1);
+                if (checknum=== 1) {
+                    try {
+                        fs.readFileSync('courses.txt', "utf-8").toString()
+                        readfilename = "courses.txt";
+                    }
+                    catch (err) {
+                        reject({"code": 424, "body": {"missing321": ["courses"]}});
+                        ifPass = false;
+                    }
+                }
+                //rooms dataset
+                else if (checknum === 2) {
+                    try {
+                        fs.readFileSync('rooms.txt', "utf-8").toString()
+                        readfilename = "rooms.txt";
+                    }
+                    catch (err) {
+                        reject({"code": 424, "body": {"missing": ["rooms"]}});
+                        ifPass = false;
+                    }
+                }
+                //not valid dataset
+                else if (checknum === 3) {
+                    reject({"code":424,"body":{"missing246": ["courses"]}});
                     ifPass = false;
                 }
             }
-            else if (ifPass &&checknum === 2) {
-                try {
-                    fs.readFileSync('rooms.txt', "utf-8").toString()
-                    readfilename = "rooms.txt";
-                }
-                catch (err) {
-                    reject({"code": 424, "body": {"missing": ["rooms"]}});
-                    ifPass = false;
-                }
+            else if(ifPass && ifEmptyWhere===true){
+                readfilename = "rooms.txt";
             }
-            else if (ifPass &&checknum === 3) {
-                reject({"code":424,"body":{"missing": ["courses"]}});
-                ifPass = false;
-            }
-            // console.log(readfilename);
+
+            // run the query--------------------------------------------------------------------------------------------
             if(ifPass){
                 try {
                     fs.readFile(readfilename, "utf-8", (err: any, data: any) => {
+                        //if can not read
                         if (err) {
-                            reject({"code": 424, "body": {"missing": ["courses"]}})
+                            reject({"code": 424, "body": {"missing123": ["courses"]}})
                         }
                         try {
                             data = JSON.parse(data);
                         } catch (err) {
-                            console.log(err);
                             reject({"code": 400, "body": {"error": "parse error"}});
                         }
-                        let helper = new Helper();
+                        //-------------------------------------------------------------
+                        if(ifEmptyWhere===true){
+                            listOfUUID=data;
+                        }
+                        else{
+                            try {
+                                listOfUUID = helper.CompareNum(where1, data);
+                            } catch (err) {
+                                reject({"code": 400, "body": {"error": "helper error"}});
+                            }
+                        }
 
-                        try {
-                            listOfUUID = helper.CompareNum(where1, data);
-                        } catch (err) {
-                            reject({"code": 400, "body": {"error": "helper error"}});
-                        }
-                        let listOfCourses: any[] = [];
-                        for (let uuid of listOfUUID) {
-                            let course: any = {};
-                            for (let column of listsOfColumn) {
-                                course[column] = uuid[column];
+
+
+                        if(ifTrans){
+                            let group2:any []=[];
+                            for(let g=0;g<group1.length;g++){
+                                group2.push(group1[group1.length-g-1]);
                             }
-                            listOfCourses.push(course);
+                            listOfUUID=helper.Groupby(group2,listOfUUID,0,listOfkeys3,listOfkeys1,listOfkeys2,listsOfColumn);
+                            //console.log(listOfUUID);
                         }
-                        if (order !== "") {
-                            if ((option1["ORDER"] === "courses_avg") || (option1["ORDER"] === "courses_pass") || (option1["ORDER"] === "courses_fail") || (option1["ORDER"] === "courses_audit") || (option1["ORDER"] === "courses_year")
-                                ||  (option1["ORDER"] === "rooms_lat") ||  (option1["ORDER"] === "rooms_lon") ||  (option1["ORDER"] === "rooms_seats")) {
-                                listOfCourses.sort(function (a, b) {
-                                    return a[order] - b[order];
+                        listOfCourses=helper.listTheColumn(listOfUUID,listsOfColumn);
+
+
+
+
+                        // if (order !== "") {
+                        //     try{
+                        //         for(let c of listOfOrder){
+                        //             helper.orderArray(c,listOfCourses,direction);
+                        //         }
+                        //     }catch (e){
+                        //         reject({"code": 400, "body": {"error": "order wrong"}});
+                        //     }
+                        // }
+
+
+
+
+                        // for(let b of group1){
+                        //     for(let c of listOfCourses){
+                        //         c[b]
+                        //     }
+                        // }
+                        //console.log(helper.Groupby(group1,listOfCourses));
+                        // var groupBy = function(xs:any, key:any) {
+                        //     return xs.reduce(function(rv:any, x:any) {
+                        //         (rv[x[key]] = rv[x[key]] || []).push(x);
+                        //         return rv;
+                        //     }, {});
+                        // };
+                        // let abc:any = [
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 18, Value: 5 },
+                        //     { Phase: "Phase 1", Step: "Step 2", Task: 25, Value: 20 },
+                        //     { Phase: "Phase 2", Step: "Step 1", Task: 52, Value: 25 },
+                        //     { Phase: "Phase 2", Step: "Step 1", Task: 60, Value: 30 },
+                        //     { Phase: "Phase 1", Step: "Step 2", Task: 80, Value: 15 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 18, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "Step 2", Task: 25, Value: 35 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 25, Value: 89 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 25, Value: 10 },
+                        //     { Phase: "Phase 2", Step: "Step 2", Task: 52, Value: 40 },
+                        //     { Phase: "Phase 4", Step: "Step 2", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "Step 5", Task: 25, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "Step 5", Task: 86, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 7, Value: 44 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 91, Value: 57 },
+                        // ];
+
+                        //helper.Groupby(["Phase","Step"],abc,0,"Value","max","MAX");
+                        //let lllll:any [] = ["Value","Task"];
+                        if(order!==""){
+                            if(direction==="DOWN"){
+                                let num:any =0;
+                                listOfCourses.sort(function (a:any, b:any) {
+                                    let final:any = b[listOfOrder[num]]-a[listOfOrder[num]];
+                                    num=num+1;
+                                    while(listOfOrder.length>num){
+                                        final= final || b[listOfOrder[num]]-a[listOfOrder[num]] ;
+                                        num=num+1;
+                                    }
+                                    num=0;
+                                    return final;
                                 });
+                                //console.log(listOfCourses);
                             }
-                            else if ((option1["ORDER"] === "courses_dept") || (option1["ORDER"] === "courses_id") || (option1["ORDER"] === "courses_instructor") || (option1["ORDER"] === "courses_uuid") || (option1["ORDER"] === "courses_title")
-                                ||  (option1["ORDER"] === "rooms_fullname") ||  (option1["ORDER"] === "rooms_shortname") ||  (option1["ORDER"] === "rooms_number") ||  (option1["ORDER"] === "rooms_name")
-                                ||  (option1["ORDER"] === "rooms_address") ||  (option1["ORDER"] === "rooms_type") ||  (option1["ORDER"] === "rooms_furniture") ||  (option1["ORDER"] === "rooms_href")) {
-                                listOfCourses.sort(function (a, b) {
-                                    if (a[order] < b[order]) return -1;
-                                    if (a[order] > b[order]) return 1;
-                                    return 0;
-                                })
-                            }
-                            else {
-                                reject({"code": 400, "body": {"error": "order wrong"}});
-                                throw new Error();
+                            else{
+                                let num:any =0;
+                                listOfCourses.sort(function (a:any, b:any) {
+                                    let final:any = a[listOfOrder[num]]-b[listOfOrder[num]];
+                                    num=num+1;
+                                    while(listOfOrder.length>num){
+                                        final= final || a[listOfOrder[num]]-b[listOfOrder[num]] ;
+                                        num=num+1;
+                                    }
+                                    num=0;
+                                    return final;
+                                });
+                                //console.log(listOfCourses);
                             }
                         }
+
+                        // if(direction="DOWN"){
+                        //
+                        // }else if(direction="UP"){
+                        //     let num:any =0;
+                        //     listOfCourses.sort(function (a:any, b:any) {
+                        //         let final:any =b[listOfOrder[num]]-a[listOfOrder[num]] ;
+                        //         num=num+1;
+                        //         while(listOfOrder.length>num){
+                        //             final= final ||  b[listOfOrder[num]]-a[listOfOrder[num]];
+                        //             num=num+1;
+                        //         }
+                        //         num=0;
+                        //         return final;
+                        //     });
+                        // }
+
+
+                        //console.log(abc);
+                        //console.log(helper.Groupby(["Phase","Step"],abc));
+                        // for(let c of Object.keys(abc)){
+                        //     console.log(groupBy(abc[c],'Step'));
+                        // }
+                        // function groupBy( array:any , f:any )
+                        // {
+                        //     var groups:any = {};
+                        //     array.forEach( function( o:any )
+                        //     {
+                        //         var group = JSON.stringify( f(o) );
+                        //         groups[group] = groups[group] || [];
+                        //         groups[group].push( o );
+                        //     });
+                        //     return Object.keys(groups).map( function( group )
+                        //     {
+                        //         return groups[group];
+                        //     })
+                        // }
+                        // let list123213:any [] = ["Phase","Step"];
+                        // var result = groupBy(abc, function(item:any)
+                        // {
+                        //     // let popop:any []=[];
+                        //     // for(let k of list123213){
+                        //     //     popop.push(item[k]);
+                        //     // }
+                        //     return [item.Phase,item.Step];
+                        // });
+                        // var groupArray = require('group-array');
+                        //console.log(groupArray(abc, 'Phase', 'Step'));
+                        // console.log(group1);
+                        // console.log(listOfCourses);
+                        // if(ifTrans){
+                        //     let group2:any []=[];
+                        //     for(let g=0;g<group1.length;g++){
+                        //         group2.push(group1[group1.length-g-1]);
+                        //     }
+                        //     listOfCourses=helper.Groupby(group2,listOfCourses,0);
+                        //     listOfCourses=helper.remove_duplicates(listOfCourses);
+                        // }
+
+
                         output.result = listOfCourses;
                         fulfill({"code": 200, "body": output});
                         console.log(output);

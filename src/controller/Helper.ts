@@ -988,4 +988,176 @@ export default class Helper{
         });
     }
 
+    listTheColumn(listOfUUID:any,listsOfColumn:any):any{
+        let listOfCourses:any [] = [];
+        var helper = new Helper();
+        for (let uuid of listOfUUID) {
+            let course: any = {};
+            //console.log(listsOfColumn);
+            for (let column of listsOfColumn) {
+                course[column] = uuid[column];
+            }
+            listOfCourses.push(course);
+        }
+        listOfCourses=helper.remove_duplicates(listOfCourses);
+        return listOfCourses;
+    }
+
+    Groupby(group1: any,listOfUUID:any,num:any,applyKey:any,keyName:any,applytoken:any,listsOfColumn:any): any {
+        let abc: any [] = [];
+        var helper = new Helper();
+        var groupBy = function(xs:any, key:any) {
+            return xs.reduce(function(rv:any, x:any) {
+                (rv[x[key]] = rv[x[key]] || []).push(x);
+                return rv;
+            }, {});
+        };
+        let ppp:any=groupBy(listOfUUID,group1[num]);
+        //console.log(ppp);
+        num=num+1;
+        for(let p of Object.keys(ppp)){
+            if(group1.length>num){
+                abc=abc.concat(helper.Groupby(group1,ppp[p],num,applyKey,keyName,applytoken,listsOfColumn));
+            }
+            else{
+                abc.push(ppp[p]);
+                for(let i=0;i<applyKey.length;i++){
+                    if(applytoken[i]==="MAX"){
+                        let templist:any []=[];
+                        for(let pp of ppp[p]){
+                            templist.push(pp[applyKey[i]]);
+                        }
+                        for(let pp of ppp[p]){
+                            pp[keyName[i]]=Math.max.apply(Math,templist);
+                        }
+                    }
+                    else if(applytoken[i]==="MIN"){
+                        let templist:any []=[];
+                        for(let pp of ppp[p]){
+                            templist.push(pp[applyKey[i]]);
+                        }
+                        for(let pp of ppp[p]){
+                            pp[keyName[i]]=Math.min.apply(Math,templist);
+                        }
+                    }
+                    else if(applytoken[i]==="AVG"){
+                        let templist:any []=[];
+                        for(let pp of ppp[p]){
+                            templist.push(pp[applyKey[i]]);
+                        }
+                        templist=templist.map(function(x:any){
+                            x = x * 10;
+                            x = Number(x.toFixed(0));
+                            return x;
+                        });
+                        var sum = templist.reduce((a, b) => a + b, 0);
+                        var avg = sum / templist.length;
+                        avg = avg / 10;
+                        var res = Number(avg.toFixed(2))
+                        for(let pp of ppp[p]){
+                            pp[keyName[i]]=res;
+                        }
+                    }
+                    else if(applytoken[i]==="COUNT"){
+                        let templist:any []=[];
+                        for(let pp of ppp[p]){
+                            if(!templist.includes(pp[applyKey[i]])){
+                                templist.push(pp[applyKey[i]]);
+                            }
+                        }
+                        for(let pp of ppp[p]){
+                            pp[keyName[i]]=templist.length;
+                        }
+                    }
+                    else if(applytoken[i]==="SUM"){
+                        let templist:any []=[];
+                        for(let pp of ppp[p]){
+                            templist.push(pp[applyKey[i]]);
+                        }
+                        var sum = templist.reduce((a, b) => a + b, 0);
+                        for(let pp of ppp[p]){
+                            pp[keyName[i]]=sum;
+                        }
+                    }
+                }
+            }
+        }
+        abc= [].concat.apply([], abc);
+        return abc;
+    }
+
+    remove_duplicates(objectsArray:any):any{
+        var usedObjects:any = {};
+        for (var i=objectsArray.length - 1;i>=0;i--) {
+            var so:any = JSON.stringify(objectsArray[i]);
+            if (usedObjects[so]) {
+                objectsArray.splice(i, 1);
+            } else {
+                usedObjects[so] = true;
+            }
+        }
+        return objectsArray;
+    }
+
+    checkValid(elements:any):any{
+        for(let element of elements){
+            if(!(element === "courses_dept") && !(element === "courses_id")
+                && !(element === "courses_avg") && !(element === "courses_instructor") && !(element === "courses_title") && !(element === "courses_year")
+                && !(element === "courses_pass") && !(element === "courses_fail") && !(element === "courses_audit") && !(element === "courses_uuid")
+                && !(element === "rooms_fullname") && !(element === "rooms_shortname") && !(element === "rooms_number") && !(element === "rooms_name")
+                && !(element === "rooms_address") && !(element === "rooms_lat" ) && !(element === "rooms_lon") && !(element === "rooms_seats")
+                && !(element === "rooms_type") && !(element === "rooms_furniture") && !(element === "rooms_href")){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    checkApply(listOfkeys1:any,listOfkeys2:any,listOfkeys3:any):any{
+        var helper = new Helper();
+        //.log(listOfkeys1);
+        //console.log(listOfkeys2);
+        //console.log(listOfkeys3);
+        if(!(listOfkeys1.length === new Set(listOfkeys1).size)||!helper.checkValid(listOfkeys3)){
+            return false;
+        }
+        for(let e1 of listOfkeys2){
+            if(e1!=="MAX"&&e1!=="MIN"&&e1!=="COUNT"&&e1!=="AVG"&&e1!=="SUM"){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+    // orderArray(order:any,listOfCourses:any,dir:any):any{
+    //     if ((order === "courses_avg") || (order === "courses_pass") || (order === "courses_fail") || (order=== "courses_audit") || (order=== "courses_year")
+    //         ||  (order === "rooms_lat") ||  (order === "rooms_lon") ||  (order === "rooms_seats")) {
+    //         if(dir==="DOWN"){
+    //             listOfCourses.sort(function (a:any, b:any) {
+    //                 return a[order]-b[order] ;
+    //             });
+    //         }
+    //         else{
+    //             listOfCourses.sort(function (a:any, b:any) {
+    //                 return b[order]-a[order] ;
+    //             });
+    //         }
+    //     }
+    //     else if ((order === "courses_dept") || (order === "courses_id") || (order === "courses_instructor") || (order === "courses_uuid") || (order === "courses_title")
+    //         ||  (order === "rooms_fullname") ||  (order === "rooms_shortname") ||  (order === "rooms_number") ||  (order === "rooms_name")
+    //         ||  (order=== "rooms_address") ||  (order=== "rooms_type") ||  (order === "rooms_furniture") ||  (order === "rooms_href")) {
+    //         listOfCourses.sort(function (a:any, b:any) {
+    //             if (a[order] < b[order]) return -1;
+    //             if (a[order] > b[order]) return 1;
+    //             return 0;
+    //         })
+    //     }
+    //     else {
+    //         //reject({"code": 400, "body": {"error": "order wrong"}});
+    //         throw new Error();
+    //     }
+    // }
+
 }

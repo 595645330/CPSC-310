@@ -1,13 +1,13 @@
 /**
- * This is the REST entry point for the project.
- * Restify is configured here.
- */
+* This is the REST entry point for the project.
+* Restify is configured here.
+*/
 
-import restify = require('restify');
+import restify = require("restify");
 
 import Log from "../Util";
 import {InsightResponse} from "../controller/IInsightFacade";
-
+import InsightFacade from "../controller/InsightFacade";
 /**
  * This configures the REST endpoints for the server.
  */
@@ -53,6 +53,7 @@ export default class Server {
                 that.rest = restify.createServer({
                     name: 'insightUBC'
                 });
+                that.rest.use(restify.bodyParser({mapParams: true, mapFiles: true}));
 
                 that.rest.get('/', function (req: restify.Request, res: restify.Response, next: restify.Next) {
                     res.send(200);
@@ -64,6 +65,11 @@ export default class Server {
                 that.rest.get('/echo/:msg', Server.echo);
 
                 // Other endpoints will go here
+                //——— duke———
+                that.rest.put('/dataset/:id', Server.put);
+                that.rest.del('/dataset/:id', Server.delete);
+                that.rest.post('/query', Server.post);
+                //——— duke ——
 
                 that.rest.listen(that.port, function () {
                     Log.info('Server::start() - restify listening: ' + that.rest.url);
@@ -81,6 +87,58 @@ export default class Server {
             }
         });
     }
+    // —— duke——
+    public static put(req: restify.Request, res: restify.Response, next: restify.Next) {
+        var f1 = new InsightFacade();
+        let dataStr = new Buffer(req.params.body).toString('base64');
+        f1.addDataset(req.params.id, dataStr).then(function (result: any) {
+            console.log("dukeiop");
+            console.log(result.code);
+            console.log(result.body);
+            res.json(result.code, result.body);
+        })
+            .catch(function (err: any){
+                console.log('asdasdas');
+                console.log(err.code);
+                res.json(err.code, err.body);
+            });
+        return next();
+    }
+
+    public static delete(req: restify.Request, res: restify.Response, next: restify.Next) {
+        var f1 = new InsightFacade();
+        f1.removeDataset(req.params.id).then(function (result: any) {
+            console.log("dukeqwe");
+            console.log(result.code);
+            console.log(result.body);
+            res.json(result.code, result.body);
+        })
+            .catch(function (err: any){
+                console.log('remove error in server.ts');
+                console.log(err.code);
+                res.json(err.code, err.body);
+            });
+        return next();
+    }
+
+    public static post(req: restify.Request, res: restify.Response, next: restify.Next) {
+        var f1 = new InsightFacade();
+        console.log('dukes req');
+        console.log(req);
+        f1.performQuery(req.body).then(function (result: any) {
+            console.log("duke query in server.ts");
+            console.log(result.code);
+            res.json(result.code, result.body);
+        })
+            .catch(function (err: any){
+                console.log('query error in server.ts');
+                console.log(err.code);
+                res.json(err.code, err.body);
+            });
+        return next();
+    }
+    //——— duke ——
+
 
     // The next two methods handle the echo service.
     // These are almost certainly not the best place to put these, but are here for your reference.
@@ -101,7 +159,7 @@ export default class Server {
 
     public static performEcho(msg: string): InsightResponse {
         if (typeof msg !== 'undefined' && msg !== null) {
-            return {code: 200, body: {message: msg + '...' + msg}};
+            return {code: 200, body: {message: msg + '…' + msg}};
         } else {
             return {code: 400, body: {error: 'Message not provided'}};
         }

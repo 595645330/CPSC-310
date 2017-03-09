@@ -476,7 +476,11 @@ export default class InsightFacade implements IInsightFacade {
                 }
             }
             else if(ifPass && ifEmptyWhere===true){
-                readfilename = "rooms.txt";
+                if(listOfUnderscore.toString().includes("rooms_")){
+                    readfilename = "rooms.txt";
+                }else if(listOfUnderscore.toString().includes("courses_")){
+                    readfilename = "courses.txt";
+                }
             }
 
             // run the query--------------------------------------------------------------------------------------------
@@ -501,6 +505,7 @@ export default class InsightFacade implements IInsightFacade {
                                 listOfUUID = helper.CompareNum(where1, data);
                             } catch (err) {
                                 reject({"code": 400, "body": {"error": "helper error"}});
+                                ifPass=false;
                             }
                         }
 
@@ -511,9 +516,15 @@ export default class InsightFacade implements IInsightFacade {
                             for(let g=0;g<group1.length;g++){
                                 group2.push(group1[group1.length-g-1]);
                             }
-                            listOfUUID=helper.Groupby(group2,listOfUUID,0,listOfkeys3,listOfkeys1,listOfkeys2,listsOfColumn);
-                            //console.log(listOfUUID);
+                            try{
+                                listOfUUID=helper.Groupby(group2,listOfUUID,0,listOfkeys3,listOfkeys1,listOfkeys2,listsOfColumn);
+                            }catch(e){
+                                reject({"code": 400, "body": {"error": "invalid applytoken"}});
+                                ifPass=false;
+                            }
                         }
+
+
                         listOfCourses=helper.listTheColumn(listOfUUID,listsOfColumn);
 
 
@@ -563,38 +574,103 @@ export default class InsightFacade implements IInsightFacade {
                         //     { Phase: "Phase 1", Step: "Step 1", Task: 91, Value: 57 },
                         // ];
 
+                        // let abc2:any = [
+                        //     { Phase: "Phase 1", Step: "afasd", Task: 18, Value: 5 },
+                        //     { Phase: "Phase 1", Step: "scasx", Task: 25, Value: 20 },
+                        //     { Phase: "Phase 2", Step: "ascas", Task: 52, Value: 25 },
+                        //     { Phase: "Phase 2", Step: "vjckos", Task: 60, Value: 30 },
+                        //     { Phase: "Phase 1", Step: "qwocnds", Task: 80, Value: 15 },
+                        //     { Phase: "Phase 1", Step: "cbnsma", Task: 18, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "bsjaksda", Task: 25, Value: 35 },
+                        //     { Phase: "Phase 1", Step: "dsajksa", Task: 25, Value: 89 },
+                        //     { Phase: "Phase 1", Step: "kasndjka", Task: 25, Value: 10 },
+                        //     { Phase: "Phase 2", Step: "fsnajks", Task: 52, Value: 40 },
+                        //     { Phase: "Phase 4", Step: "plajwn", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "asjdkoq", Task: 25, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "bsaida", Task: 86, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "asodia", Task: 7, Value: 44 },
+                        //     { Phase: "Phase 1", Step: "saidoq", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "cdsada", Task: 91, Value: 57 },
+                        // ];
+
+
+
+
+                        if (order !== "") {
+                            let cmp = function(a:any, b:any) {
+                                if (a > b) return +1;
+                                if (a < b) return -1;
+                                return 0;
+                            }
+                            let num:any = 0;
+                            listOfCourses.sort(function(a:any, b:any) {
+                                let final:any = cmp(a[listOfOrder[num]],b[listOfOrder[num]]);
+                                num=num+1;
+                                while(listOfOrder.length>num){
+                                    final= final || cmp(a[listOfOrder[num]],b[listOfOrder[num]]) ;
+                                    num=num+1;
+                                }
+                                num=0;
+                                return final;
+                                //return cmp(a.Value,b.Value) || cmp(a.Task,b.Task);
+                            })
+                        }
+                        // abc2.sort(function (a:any, b:any) {
+                        //
+                        //     console.log("A value is: " + a.Value + " B value is: " + b.Value);
+                        //
+                        //     if (a[listOfSort[num]] < b[listOfSort[num]]) {
+                        //         return -1;
+                        //     }
+                        //     else if (a[listOfSort[num]] > b[listOfSort[num]]) {
+                        //         return 1;
+                        //     }
+                        //     else{
+                        //         while (a[listOfSort[num]] === b[listOfSort[num]]&&listOfSort.length>num+1){
+                        //             num=num+1;
+                        //             console.log("A task is: " + a.Task + " B task is: " + b.Task);
+                        //             if (a[listOfSort[num]] < b[listOfSort[num]]) return -1;
+                        //             if (a[listOfSort[num]] > b[listOfSort[num]]) return 1;
+                        //         }
+                        //     }
+                        //
+                        //     num=0;
+                        //     return 0;
+                        // })
+
+                        //console.log(abc2)
                         //helper.Groupby(["Phase","Step"],abc,0,"Value","max","MAX");
                         //let lllll:any [] = ["Value","Task"];
-                        if(order!==""){
-                            if(direction==="DOWN"){
-                                let num:any =0;
-                                listOfCourses.sort(function (a:any, b:any) {
-                                    let final:any = b[listOfOrder[num]]-a[listOfOrder[num]];
-                                    num=num+1;
-                                    while(listOfOrder.length>num){
-                                        final= final || b[listOfOrder[num]]-a[listOfOrder[num]] ;
-                                        num=num+1;
-                                    }
-                                    num=0;
-                                    return final;
-                                });
-                                //console.log(listOfCourses);
-                            }
-                            else{
-                                let num:any =0;
-                                listOfCourses.sort(function (a:any, b:any) {
-                                    let final:any = a[listOfOrder[num]]-b[listOfOrder[num]];
-                                    num=num+1;
-                                    while(listOfOrder.length>num){
-                                        final= final || a[listOfOrder[num]]-b[listOfOrder[num]] ;
-                                        num=num+1;
-                                    }
-                                    num=0;
-                                    return final;
-                                });
-                                //console.log(listOfCourses);
-                            }
-                        }
+                        // if(order!==""){
+                        //     if(direction==="DOWN"){
+                        //         let num:any =0;
+                        //         listOfCourses.sort(function (a:any, b:any) {
+                        //             let final:any = b[listOfOrder[num]]-a[listOfOrder[num]];
+                        //             num=num+1;
+                        //             while(listOfOrder.length>num){
+                        //                 final= final || b[listOfOrder[num]]-a[listOfOrder[num]] ;
+                        //                 num=num+1;
+                        //             }
+                        //             num=0;
+                        //             return final;
+                        //         });
+                        //         //console.log(listOfCourses);
+                        //     }
+                        //     else{
+                        //         let num:any =0;
+                        //         listOfCourses.sort(function (a:any, b:any) {
+                        //             let final:any = a[listOfOrder[num]]-b[listOfOrder[num]];
+                        //             num=num+1;
+                        //             while(listOfOrder.length>num){
+                        //                 final= final || a[listOfOrder[num]]-b[listOfOrder[num]] ;
+                        //                 num=num+1;
+                        //             }
+                        //             num=0;
+                        //             return final;
+                        //         });
+                        //         //console.log(listOfCourses);
+                        //     }
+                        // }
 
                         // if(direction="DOWN"){
                         //

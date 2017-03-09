@@ -1024,38 +1024,52 @@ export default class Helper{
                 for(let i=0;i<applyKey.length;i++){
                     if(applytoken[i]==="MAX"){
                         let templist:any []=[];
-                        for(let pp of ppp[p]){
-                            templist.push(pp[applyKey[i]]);
+                        if(helper.checkString(applyKey[i])){
+                            throw new Error();
                         }
-                        for(let pp of ppp[p]){
-                            pp[keyName[i]]=Math.max.apply(Math,templist);
+                        else{
+                            for(let pp of ppp[p]){
+                                templist.push(pp[applyKey[i]]);
+                            }
+                            for(let pp of ppp[p]){
+                                pp[keyName[i]]=Math.max.apply(Math,templist);
+                            }
                         }
                     }
                     else if(applytoken[i]==="MIN"){
                         let templist:any []=[];
-                        for(let pp of ppp[p]){
-                            templist.push(pp[applyKey[i]]);
-                        }
-                        for(let pp of ppp[p]){
-                            pp[keyName[i]]=Math.min.apply(Math,templist);
+                        if(helper.checkString(applyKey[i])){
+                            throw new Error();
+                        }else{
+                            for(let pp of ppp[p]){
+                                templist.push(pp[applyKey[i]]);
+                            }
+                            for(let pp of ppp[p]){
+                                pp[keyName[i]]=Math.min.apply(Math,templist);
+                            }
                         }
                     }
                     else if(applytoken[i]==="AVG"){
                         let templist:any []=[];
-                        for(let pp of ppp[p]){
-                            templist.push(pp[applyKey[i]]);
+                        if(helper.checkString(applyKey[i])){
+                            throw new Error();
                         }
-                        templist=templist.map(function(x:any){
-                            x = x * 10;
-                            x = Number(x.toFixed(0));
-                            return x;
-                        });
-                        var sum = templist.reduce((a, b) => a + b, 0);
-                        var avg = sum / templist.length;
-                        avg = avg / 10;
-                        var res = Number(avg.toFixed(2))
-                        for(let pp of ppp[p]){
-                            pp[keyName[i]]=res;
+                        else{
+                            for(let pp of ppp[p]){
+                                templist.push(pp[applyKey[i]]);
+                            }
+                            templist=templist.map(function(x:any){
+                                x = x * 10;
+                                x = Number(x.toFixed(0));
+                                return x;
+                            });
+                            var sum = templist.reduce((a, b) => a + b, 0);
+                            var avg = sum / templist.length;
+                            avg = avg / 10;
+                            var res = Number(avg.toFixed(2))
+                            for(let pp of ppp[p]){
+                                pp[keyName[i]]=res;
+                            }
                         }
                     }
                     else if(applytoken[i]==="COUNT"){
@@ -1071,12 +1085,17 @@ export default class Helper{
                     }
                     else if(applytoken[i]==="SUM"){
                         let templist:any []=[];
-                        for(let pp of ppp[p]){
-                            templist.push(pp[applyKey[i]]);
+                        if(helper.checkString(applyKey[i])){
+                           throw new Error();
                         }
-                        var sum = templist.reduce((a, b) => a + b, 0);
-                        for(let pp of ppp[p]){
-                            pp[keyName[i]]=sum;
+                        else{
+                            for(let pp of ppp[p]){
+                                templist.push(pp[applyKey[i]]);
+                            }
+                            var sum = templist.reduce((a, b) => a + b, 0);
+                            for(let pp of ppp[p]){
+                                pp[keyName[i]]=sum;
+                            }
                         }
                     }
                 }
@@ -1084,6 +1103,16 @@ export default class Helper{
         }
         abc= [].concat.apply([], abc);
         return abc;
+    }
+
+    checkString(order:any):any{
+        if ((order === "courses_avg") || (order === "courses_pass") || (order === "courses_fail") || (order=== "courses_audit") || (order=== "courses_year")
+                || (order === "rooms_lat") ||  (order === "rooms_lon") ||  (order === "rooms_seats")){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     remove_duplicates(objectsArray:any):any{
@@ -1115,9 +1144,6 @@ export default class Helper{
 
     checkApply(listOfkeys1:any,listOfkeys2:any,listOfkeys3:any):any{
         var helper = new Helper();
-        //.log(listOfkeys1);
-        //console.log(listOfkeys2);
-        //console.log(listOfkeys3);
         if(!(listOfkeys1.length === new Set(listOfkeys1).size)||!helper.checkValid(listOfkeys3)){
             return false;
         }
@@ -1128,6 +1154,7 @@ export default class Helper{
         }
         return true;
     }
+
 
 
 

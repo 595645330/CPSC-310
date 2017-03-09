@@ -270,7 +270,7 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    performQuery(query: QueryRequest): Promise <InsightResponse> {
+    performQuery(query: any): Promise <InsightResponse> {
         let that = this;
         return new Promise(function (fulfill, reject) {
             var fs = require("fs");

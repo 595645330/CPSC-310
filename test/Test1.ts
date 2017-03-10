@@ -291,7 +291,132 @@ describe("Test1", function () {
             expect.fail();
         })
     });
-
+    it.only("D3 test8 AVG", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_shortname",
+                    "avgSeats"
+                ],
+                "ORDER": {
+                    "dir": "DOWN",
+                    "keys": ["avgSeats"]
+                },
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_shortname"],
+                "APPLY": [{
+                    "avgSeats": {
+                        "AVG": "rooms_seats"
+                    }
+                }]
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("D3 test8 COUNT", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_shortname",
+                    "avgSeats"
+                ],
+                "ORDER": {
+                    "dir": "DOWN",
+                    "keys": ["avgSeats"]
+                },
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_shortname"],
+                "APPLY": [{
+                    "avgSeats": {
+                        "COUNT": "rooms_seats"
+                    }
+                }]
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
+    it.only("D3 test8 MIN", function () {
+        var f1 = new InsightFacade();
+        var q1:any={
+            "WHERE": {
+                "AND": [{
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                }, {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }]
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_shortname",
+                    "avgSeats"
+                ],
+                "ORDER": {
+                    "dir": "DOWN",
+                    "keys": ["avgSeats"]
+                },
+                "FORM": "TABLE"
+            },
+            "TRANSFORMATIONS": {
+                "GROUP": ["rooms_shortname"],
+                "APPLY": [{
+                    "avgSeats": {
+                        "MIN": "rooms_seats"
+                    }
+                }]
+            }
+        }
+        return f1.performQuery(q1).then(function(response:InsightResponse) {
+            Log.test('Value: ' + response);
+            expect(response["code"]).to.equal(200);
+        }).catch(function (err) {
+            console.log(err);
+            expect.fail();
+        })
+    });
     it.only("D3 test6", function () {
         var f1 = new InsightFacade();
         var q1:any={

@@ -1155,6 +1155,18 @@ export default class Helper{
         return true;
     }
 
+    checkOption(options:any):any{
+        for(let option of options){
+            if(option!=="COLUMNS"&&option!=="ORDER"&&option!=="FORM"){
+                return true;
+            }
+        }
+        if(options.includes("COLUMNS")&&options.includes("FORM")){
+            return false
+        }else{
+            return true
+        }
+    }
 
 
 

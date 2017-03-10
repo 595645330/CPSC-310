@@ -356,8 +356,7 @@ export default class InsightFacade implements IInsightFacade {
                 ifEmptyWhere=true;
             }
             //Check if the first key of Options is COLUMN and second is ORDER third is FORM, or first is COLUMNS and second is FORM
-            if (ifPass &&!(Object.keys(option1)[0] === "COLUMNS" && Object.keys(option1)[1] === "ORDER" && Object.keys(option1)[2] === "FORM" && (Object.keys(option1)).length === 3)
-                && !(Object.keys(option1)[0] === "COLUMNS" &&  Object.keys(option1)[1] === "FORM" && (Object.keys(option1)).length === 2)){
+            if (helper.checkOption(Object.keys(option1))){
                 reject({"code":400,"body":{"error": "OPTIONS wrong"}});
                 ifPass=false;
             }

@@ -371,7 +371,7 @@ describe("Test1", function () {
         Log.test(JSON.stringify(out));
         sanityCheck(out);
         expect(out.code).to.equal(200);
-        expect(out.body).to.deep.equal({message: 'echo...echo'});
+        expect(out.body).to.deep.equal({message: 'echo…echo'});
     });
 
     it.only("Should be able to echo silence", function () {
@@ -379,7 +379,7 @@ describe("Test1", function () {
         Log.test(JSON.stringify(out));
         sanityCheck(out);
         expect(out.code).to.equal(200);
-        expect(out.body).to.deep.equal({message: '...'});
+        expect(out.body).to.deep.equal({message: '…'});
     });
 
     it.only("Should be able to handle a missing echo message sensibly", function () {

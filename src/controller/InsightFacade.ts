@@ -474,23 +474,9 @@ export default class InsightFacade implements IInsightFacade {
             }
             else if(ifPass && ifEmptyWhere===true){
                 if(listOfUnderscore.toString().includes("rooms_")){
-                    try {
-                        fs.readFileSync('courses.txt', "utf-8").toString()
-                        readfilename = "rooms.txt";
-                    }
-                    catch (err) {
-                        reject({"code": 424, "body": {"missing": ["courses"]}});
-                        ifPass = false;
-                    }
+                    readfilename = "rooms.txt";
                 }else if(listOfUnderscore.toString().includes("courses_")){
-                    try {
-                        fs.readFileSync('rooms.txt', "utf-8").toString()
-                        readfilename = "courses.txt";
-                    }
-                    catch (err) {
-                        reject({"code": 424, "body": {"missing": ["rooms"]}});
-                        ifPass = false;
-                    }
+                    readfilename = "courses.txt";
                 }
             }
 
@@ -501,33 +487,28 @@ export default class InsightFacade implements IInsightFacade {
                         //if can not read
                         if (err) {
                             reject({"code": 424, "body": {"missing": ["courses"]}})
-                            ifPass=false;
                         }
-                        if(ifPass){
-                            try {
-                                data = JSON.parse(data);
-                            } catch (err) {
-                                reject({"code": 400, "body": {"error": "parse error"}});
-                                ifPass=false
-                            }
+                        try {
+                            data = JSON.parse(data);
+                        } catch (err) {
+                            reject({"code": 400, "body": {"error": "parse error"}});
                         }
-
                         //-------------------------------------------------------------
-                        if(ifPass&&ifEmptyWhere===true){
+                        if(ifEmptyWhere===true){
                             listOfUUID=data;
                         }
                         else{
-                            if(ifPass){
-                                try {
-                                    listOfUUID = helper.CompareNum(where1, data);
-                                } catch (err) {
-                                    reject({"code": 400, "body": {"error": "helper error"}});
-                                    ifPass=false;
-                                }
+                            try {
+                                listOfUUID = helper.CompareNum(where1, data);
+                            } catch (err) {
+                                reject({"code": 400, "body": {"error": "helper error"}});
+                                ifPass=false;
                             }
                         }
 
-                        if(ifPass&&ifTrans){
+
+
+                        if(ifTrans){
                             let group2:any []=[];
                             for(let g=0;g<group1.length;g++){
                                 group2.push(group1[group1.length-g-1]);
@@ -540,11 +521,79 @@ export default class InsightFacade implements IInsightFacade {
                             }
                         }
 
-                        if(ifPass){
-                            listOfCourses=helper.listTheColumn(listOfUUID,listsOfColumn,ifTrans);
-                        }
 
-                        if (ifPass&&order !== "") {
+                        listOfCourses=helper.listTheColumn(listOfUUID,listsOfColumn,ifTrans);
+
+
+
+
+                        // if (order !== "") {
+                        //     try{
+                        //         for(let c of listOfOrder){
+                        //             helper.orderArray(c,listOfCourses,direction);
+                        //         }
+                        //     }catch (e){
+                        //         reject({"code": 400, "body": {"error": "order wrong"}});
+                        //     }
+                        // }
+
+
+
+
+                        // for(let b of group1){
+                        //     for(let c of listOfCourses){
+                        //         c[b]
+                        //     }
+                        // }
+                        //console.log(helper.Groupby(group1,listOfCourses));
+                        // var groupBy = function(xs:any, key:any) {
+                        //     return xs.reduce(function(rv:any, x:any) {
+                        //         (rv[x[key]] = rv[x[key]] || []).push(x);
+                        //         return rv;
+                        //     }, {});
+                        // };
+                        // let abc:any = [
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 18, Value: 5 },
+                        //     { Phase: "Phase 1", Step: "Step 2", Task: 25, Value: 20 },
+                        //     { Phase: "Phase 2", Step: "Step 1", Task: 52, Value: 25 },
+                        //     { Phase: "Phase 2", Step: "Step 1", Task: 60, Value: 30 },
+                        //     { Phase: "Phase 1", Step: "Step 2", Task: 80, Value: 15 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 18, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "Step 2", Task: 25, Value: 35 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 25, Value: 89 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 25, Value: 10 },
+                        //     { Phase: "Phase 2", Step: "Step 2", Task: 52, Value: 40 },
+                        //     { Phase: "Phase 4", Step: "Step 2", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "Step 5", Task: 25, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "Step 5", Task: 86, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 7, Value: 44 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "Step 1", Task: 91, Value: 57 },
+                        // ];
+
+                        // let abc2:any = [
+                        //     { Phase: "Phase 1", Step: "afasd", Task: 18, Value: 5 },
+                        //     { Phase: "Phase 1", Step: "scasx", Task: 25, Value: 20 },
+                        //     { Phase: "Phase 2", Step: "ascas", Task: 52, Value: 25 },
+                        //     { Phase: "Phase 2", Step: "vjckos", Task: 60, Value: 30 },
+                        //     { Phase: "Phase 1", Step: "qwocnds", Task: 80, Value: 15 },
+                        //     { Phase: "Phase 1", Step: "cbnsma", Task: 18, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "bsjaksda", Task: 25, Value: 35 },
+                        //     { Phase: "Phase 1", Step: "dsajksa", Task: 25, Value: 89 },
+                        //     { Phase: "Phase 1", Step: "kasndjka", Task: 25, Value: 10 },
+                        //     { Phase: "Phase 2", Step: "fsnajks", Task: 52, Value: 40 },
+                        //     { Phase: "Phase 4", Step: "plajwn", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 2", Step: "asjdkoq", Task: 25, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "bsaida", Task: 86, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "asodia", Task: 7, Value: 44 },
+                        //     { Phase: "Phase 1", Step: "saidoq", Task: 60, Value: 40 },
+                        //     { Phase: "Phase 1", Step: "cdsada", Task: 91, Value: 57 },
+                        // ];
+
+
+
+
+                        if (order !== "") {
                             let cmp = function(a:any, b:any) {
                                 if (a > b) return +1;
                                 if (a < b) return -1;
@@ -563,11 +612,125 @@ export default class InsightFacade implements IInsightFacade {
                                 //return cmp(a.Value,b.Value) || cmp(a.Task,b.Task);
                             })
                         }
-                        if(ifPass){
-                            output.result = listOfCourses;
-                            fulfill({"code": 200, "body": output});
-                            console.log(output);
-                        }
+                        // abc2.sort(function (a:any, b:any) {
+                        //
+                        //     console.log("A value is: " + a.Value + " B value is: " + b.Value);
+                        //
+                        //     if (a[listOfSort[num]] < b[listOfSort[num]]) {
+                        //         return -1;
+                        //     }
+                        //     else if (a[listOfSort[num]] > b[listOfSort[num]]) {
+                        //         return 1;
+                        //     }
+                        //     else{
+                        //         while (a[listOfSort[num]] === b[listOfSort[num]]&&listOfSort.length>num+1){
+                        //             num=num+1;
+                        //             console.log("A task is: " + a.Task + " B task is: " + b.Task);
+                        //             if (a[listOfSort[num]] < b[listOfSort[num]]) return -1;
+                        //             if (a[listOfSort[num]] > b[listOfSort[num]]) return 1;
+                        //         }
+                        //     }
+                        //
+                        //     num=0;
+                        //     return 0;
+                        // })
+
+                        //console.log(abc2)
+                        //helper.Groupby(["Phase","Step"],abc,0,"Value","max","MAX");
+                        //let lllll:any [] = ["Value","Task"];
+                        // if(order!==""){
+                        //     if(direction==="DOWN"){
+                        //         let num:any =0;
+                        //         listOfCourses.sort(function (a:any, b:any) {
+                        //             let final:any = b[listOfOrder[num]]-a[listOfOrder[num]];
+                        //             num=num+1;
+                        //             while(listOfOrder.length>num){
+                        //                 final= final || b[listOfOrder[num]]-a[listOfOrder[num]] ;
+                        //                 num=num+1;
+                        //             }
+                        //             num=0;
+                        //             return final;
+                        //         });
+                        //         //console.log(listOfCourses);
+                        //     }
+                        //     else{
+                        //         let num:any =0;
+                        //         listOfCourses.sort(function (a:any, b:any) {
+                        //             let final:any = a[listOfOrder[num]]-b[listOfOrder[num]];
+                        //             num=num+1;
+                        //             while(listOfOrder.length>num){
+                        //                 final= final || a[listOfOrder[num]]-b[listOfOrder[num]] ;
+                        //                 num=num+1;
+                        //             }
+                        //             num=0;
+                        //             return final;
+                        //         });
+                        //         //console.log(listOfCourses);
+                        //     }
+                        // }
+
+                        // if(direction="DOWN"){
+                        //
+                        // }else if(direction="UP"){
+                        //     let num:any =0;
+                        //     listOfCourses.sort(function (a:any, b:any) {
+                        //         let final:any =b[listOfOrder[num]]-a[listOfOrder[num]] ;
+                        //         num=num+1;
+                        //         while(listOfOrder.length>num){
+                        //             final= final ||  b[listOfOrder[num]]-a[listOfOrder[num]];
+                        //             num=num+1;
+                        //         }
+                        //         num=0;
+                        //         return final;
+                        //     });
+                        // }
+
+
+                        //console.log(abc);
+                        //console.log(helper.Groupby(["Phase","Step"],abc));
+                        // for(let c of Object.keys(abc)){
+                        //     console.log(groupBy(abc[c],'Step'));
+                        // }
+                        // function groupBy( array:any , f:any )
+                        // {
+                        //     var groups:any = {};
+                        //     array.forEach( function( o:any )
+                        //     {
+                        //         var group = JSON.stringify( f(o) );
+                        //         groups[group] = groups[group] || [];
+                        //         groups[group].push( o );
+                        //     });
+                        //     return Object.keys(groups).map( function( group )
+                        //     {
+                        //         return groups[group];
+                        //     })
+                        // }
+                        // let list123213:any [] = ["Phase","Step"];
+                        // var result = groupBy(abc, function(item:any)
+                        // {
+                        //     // let popop:any []=[];
+                        //     // for(let k of list123213){
+                        //     //     popop.push(item[k]);
+                        //     // }
+                        //     return [item.Phase,item.Step];
+                        // });
+                        // var groupArray = require('group-array');
+                        //console.log(groupArray(abc, 'Phase', 'Step'));
+                        // console.log(group1);
+                        // console.log(listOfCourses);
+                        // if(ifTrans){
+                        //     let group2:any []=[];
+                        //     for(let g=0;g<group1.length;g++){
+                        //         group2.push(group1[group1.length-g-1]);
+                        //     }
+                        //     listOfCourses=helper.Groupby(group2,listOfCourses,0);
+                        //     listOfCourses=helper.remove_duplicates(listOfCourses);
+                        // }
+
+
+                        output.result = listOfCourses;
+                        fulfill({"code": 200, "body": output});
+                        console.log(output);
                     });
                 } catch (err) {
                     reject({

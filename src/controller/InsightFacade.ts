@@ -451,7 +451,7 @@ export default class InsightFacade implements IInsightFacade {
                         readfilename = "courses.txt";
                     }
                     catch (err) {
-                        reject({"code": 424, "body": {"missing321": ["courses"]}});
+                        reject({"code": 424, "body": {"missing": ["courses"]}});
                         ifPass = false;
                     }
                 }
@@ -468,15 +468,29 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 //not valid dataset
                 else if (checknum === 3) {
-                    reject({"code":424,"body":{"missing246": ["courses"]}});
+                    reject({"code":424,"body":{"missing": ["courses"]}});
                     ifPass = false;
                 }
             }
             else if(ifPass && ifEmptyWhere===true){
                 if(listOfUnderscore.toString().includes("rooms_")){
-                    readfilename = "rooms.txt";
+                    try {
+                        fs.readFileSync('courses.txt', "utf-8").toString()
+                        readfilename = "rooms.txt";
+                    }
+                    catch (err) {
+                        reject({"code": 424, "body": {"missing": ["courses"]}});
+                        ifPass = false;
+                    }
                 }else if(listOfUnderscore.toString().includes("courses_")){
-                    readfilename = "courses.txt";
+                    try {
+                        fs.readFileSync('rooms.txt', "utf-8").toString()
+                        readfilename = "courses.txt";
+                    }
+                    catch (err) {
+                        reject({"code": 424, "body": {"missing": ["rooms"]}});
+                        ifPass = false;
+                    }
                 }
             }
 
@@ -486,7 +500,7 @@ export default class InsightFacade implements IInsightFacade {
                     fs.readFile(readfilename, "utf-8", (err: any, data: any) => {
                         //if can not read
                         if (err) {
-                            reject({"code": 424, "body": {"missing123": ["courses"]}})
+                            reject({"code": 424, "body": {"missing": ["courses"]}})
                             ifPass=false;
                         }
                         if(ifPass){

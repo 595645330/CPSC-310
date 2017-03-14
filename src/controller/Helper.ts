@@ -988,7 +988,7 @@ export default class Helper{
         });
     }
 
-    listTheColumn(listOfUUID:any,listsOfColumn:any):any{
+    listTheColumn(listOfUUID:any,listsOfColumn:any,iftrans:any):any{
         let listOfCourses:any [] = [];
         var helper = new Helper();
         for (let uuid of listOfUUID) {
@@ -999,7 +999,10 @@ export default class Helper{
             }
             listOfCourses.push(course);
         }
-        listOfCourses=helper.remove_duplicates(listOfCourses);
+        if(iftrans){
+            listOfCourses=helper.remove_duplicates(listOfCourses);
+        }
+
         return listOfCourses;
     }
 
@@ -1167,36 +1170,5 @@ export default class Helper{
             return true
         }
     }
-
-
-
-    // orderArray(order:any,listOfCourses:any,dir:any):any{
-    //     if ((order === "courses_avg") || (order === "courses_pass") || (order === "courses_fail") || (order=== "courses_audit") || (order=== "courses_year")
-    //         ||  (order === "rooms_lat") ||  (order === "rooms_lon") ||  (order === "rooms_seats")) {
-    //         if(dir==="DOWN"){
-    //             listOfCourses.sort(function (a:any, b:any) {
-    //                 return a[order]-b[order] ;
-    //             });
-    //         }
-    //         else{
-    //             listOfCourses.sort(function (a:any, b:any) {
-    //                 return b[order]-a[order] ;
-    //             });
-    //         }
-    //     }
-    //     else if ((order === "courses_dept") || (order === "courses_id") || (order === "courses_instructor") || (order === "courses_uuid") || (order === "courses_title")
-    //         ||  (order === "rooms_fullname") ||  (order === "rooms_shortname") ||  (order === "rooms_number") ||  (order === "rooms_name")
-    //         ||  (order=== "rooms_address") ||  (order=== "rooms_type") ||  (order === "rooms_furniture") ||  (order === "rooms_href")) {
-    //         listOfCourses.sort(function (a:any, b:any) {
-    //             if (a[order] < b[order]) return -1;
-    //             if (a[order] > b[order]) return 1;
-    //             return 0;
-    //         })
-    //     }
-    //     else {
-    //         //reject({"code": 400, "body": {"error": "order wrong"}});
-    //         throw new Error();
-    //     }
-    // }
 
 }

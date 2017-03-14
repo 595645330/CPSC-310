@@ -356,7 +356,7 @@ export default class InsightFacade implements IInsightFacade {
                 ifEmptyWhere=true;
             }
             //Check if the first key of Options is COLUMN and second is ORDER third is FORM, or first is COLUMNS and second is FORM
-            if (helper.checkOption(Object.keys(option1))){
+            if (ifPass &&helper.checkOption(Object.keys(option1))){
                 reject({"code":400,"body":{"error": "OPTIONS wrong"}});
                 ifPass=false;
             }
@@ -377,8 +377,6 @@ export default class InsightFacade implements IInsightFacade {
                     listsOfColumn.push(a);
                 }
                 //------------------------------------------------------------------
-
-
                 if(listOfUnderscore.length!==0){
                     if(!helper.checkValid(listOfUnderscore)) {
                         reject({"code": 400, "body": {"error": "wrong column"}});
@@ -524,7 +522,7 @@ export default class InsightFacade implements IInsightFacade {
                         }
 
 
-                        listOfCourses=helper.listTheColumn(listOfUUID,listsOfColumn);
+                        listOfCourses=helper.listTheColumn(listOfUUID,listsOfColumn,ifTrans);
 
 
 
@@ -591,7 +589,6 @@ export default class InsightFacade implements IInsightFacade {
                         //     { Phase: "Phase 1", Step: "saidoq", Task: 60, Value: 40 },
                         //     { Phase: "Phase 1", Step: "cdsada", Task: 91, Value: 57 },
                         // ];
-                        //
 
 
 

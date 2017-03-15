@@ -493,7 +493,7 @@ export default class InsightFacade implements IInsightFacade {
                         } catch (err) {
                             reject({"code": 400, "body": {"error": "parse error"}});
                         }
-                        //-----------------------------------------------------------
+                        //-------------------------------------------------------------
                         if(ifEmptyWhere===true){
                             listOfUUID=data;
                         }

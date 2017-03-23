@@ -727,7 +727,6 @@ export default class InsightFacade implements IInsightFacade {
                         //     listOfCourses=helper.remove_duplicates(listOfCourses);
                         // }
 
-
                         output.result = listOfCourses;
                         fulfill({"code": 200, "body": output});
                         console.log(output);

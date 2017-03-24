@@ -528,8 +528,8 @@ export default class InsightFacade implements IInsightFacade {
                         if (order !== "") {
                             if(direction==="DOWN"){
                                 let cmp = function(a:any, b:any) {
-                                    if (a > b) return +1;
-                                    if (a < b) return -1;
+                                    if (a > b) return -1;
+                                    if (a < b) return +1;
                                     return 0;
                                 }
                                 let num:any = 0;
@@ -547,8 +547,8 @@ export default class InsightFacade implements IInsightFacade {
                             }
                             else{
                                 let cmp = function(a:any, b:any) {
-                                    if (a > b) return -1;
-                                    if (a < b) return +1;
+                                    if (a > b) return +1;
+                                    if (a < b) return -1;
                                     return 0;
                                 }
                                 let num:any = 0;

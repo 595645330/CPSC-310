@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS 310 Proj</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<p>Here is the UI for Courses</p>
+<input type="file" name="fileUpload" id="fileUpload"/>
+<button id="btnUpload">Upload data for Courses here</button>
+<button id="btnClear">delete Courses Data</button>
+
+<div>
+    Filter by department name:<br>
+    <input type="textarea" id="deptname"><br>
+    Filter by instructor:<br>
+    <input type="textarea" id="instructname"><br>
+    Filter by course title:<br>
+    <input type="textarea" id="coursetitle"><br>
+    Filter by course id:<br>
+    <input type="textarea" id="courseno"><br>
+    Filter by course size:<br>
+    <input type="checkbox" id="CheckGT" onchange="gtc()">Greater than
+    <input type="checkbox" id="CheckEQ">Equal to
+    <input type="checkbox" id="CheckLT" onchange="ltc()">Less than
+    Size: <input type="textarea" id="csize">
+    <br>
+    <br>
+
+    Order by:fill in any of courses_pass,courses_fail,courses_avg by the order you like into the box below<br>
+    <input type="textarea" id="ordby"><br>
+    Direction: UP or DOWN<br>
+    <input type="textarea" id="dir"><br>
+    <button id="btnSubmit">Submit</button>
+    <table id = "tblResults"></table>
+
+</div>
+<script>
+    $("#btnUpload").click(function(){
+        var filetoLoad = document.getElementById("fileUpload").files[0];
+        var fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(filetoLoad);
+        fileReader.onload = function (evt) {
+            var id = filetoLoad.name.split('.')[0];
+            var content = evt.target.result;
+            var formData = new FormData();
+            formData.append('body', new Blob([content]));
+
+            $.ajax({
+                url: 'http://localhost:4321/dataset/'+ id,
+                type: 'put',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false
+                }).done(function (data) {
+                console.log(filetoLoad.name + 'was uploaded');
+            }).fail(function (data) {
+                console.log('Error - fail to upload' + filetoLoad.name + '.');
+            });
+        }
+    });
+
+    $("#btnSubmit").click(function () {
+            var myNode = document.getElementById("tblResults");
+            while (myNode.firstChild) {
+                myNode.removeChild(myNode.firstChild);
+            }
+            var ctitle = $("#coursetitle").val();
+            var deptn = $("#deptname").val();
+            var cno = $("#courseno").val();
+            console.log(deptn);
+            var filters = [];
+            var order= [];
+            var direction = $("#dir").val();
+            var arrayoforder = $("#ordby").val().split(",");
+            var instrct = $("#instructname").val();
+            order = arrayoforder;
+            console.log(order.length);
+            if (deptn!=="") {
+               filters.push({
+                   "IS": {
+                       "courses_dept": deptn
+                   }
+               });
+            }
+            if (instrct!=="") {
+               filters.push({
+                   "IS": {
+                       "courses_instructor": "*"+instrct+"*"
+                   }
+               })
+            }
+
+            if(ctitle!==""){
+               filters.push({
+                   "IS": {
+                       "courses_title": "*"+ctitle+"*"
+                   }
+               })
+            }
+            if(cno!==""){
+                filters.push({
+                    "IS": {
+                        "courses_id": cno
+                    }
+                })
+            }
+            if (filters.length === 1 && direction !== ""){
+                var query = {
+                    "WHERE": filters[0],
+                    "OPTIONS": {
+                        "COLUMNS": [
+                            "courses_dept",
+                            "courses_avg",
+                            "courses_id",
+                            "courses_year",
+                            "courses_instructor",
+                            "courses_title",
+                            "courses_pass",
+                            "courses_fail",
+                            "courses_audit",
+                            "courses_uuid"
+                        ],
+                        "ORDER": {
+                            "dir": direction,
+                            "keys": order
+                        },
+                        "FORM": "TABLE"
+                    }
+                }
+            }
+
+        else if (filters.length === 1 && direction === ""){
+            var query = {
+                "WHERE": filters[0],
+                "OPTIONS": {
+                    "COLUMNS": [
+                        "courses_dept",
+                        "courses_avg",
+                        "courses_id",
+                        "courses_year",
+                        "courses_instructor",
+                        "courses_title",
+                        "courses_pass",
+                        "courses_fail",
+                        "courses_audit",
+                        "courses_uuid"
+                    ],
+                    "FORM": "TABLE"
+                }
+            }
+        }
+        else if (filters.length > 1 && direction === ""){
+            var query = {
+                "WHERE": {
+                    "AND": filters
+                },
+                "OPTIONS": {
+                    "COLUMNS": [
+                        "courses_dept",
+                        "courses_avg",
+                        "courses_id",
+                        "courses_year",
+                        "courses_instructor",
+                        "courses_title",
+                        "courses_pass",
+                        "courses_fail",
+                        "courses_audit",
+                        "courses_uuid"
+                    ],
+                    "FORM": "TABLE"
+                }
+            }
+        }
+        else {
+            var query = {
+                "WHERE": {
+                    "AND": filters
+                },
+                "OPTIONS": {
+                    "COLUMNS": [
+                        "courses_dept",
+                        "courses_avg",
+                        "courses_id",
+                        "courses_year",
+                        "courses_instructor",
+                        "courses_title",
+                        "courses_pass",
+                        "courses_fail",
+                        "courses_audit",
+                        "courses_uuid"
+                    ],
+                    "ORDER": {
+                        "dir": direction,
+                        "keys": order
+                    },
+                    "FORM": "TABLE"
+                }
+            }
+        }
+        console.log("query", query);
+        console.log(typeof query);
+        $.ajax({
+            url: 'http://localhost:4321/query',
+            type: 'post',
+            data: JSON.stringify(query),
+            dataType: 'json',
+            contentType: 'application/json'
+        }).done(function (data) {
+            console.log("Response", data);
+            generateTable(data.result);
+            handlesize();
+            addkeystotable();
+        }).fail(function (data) {
+            console.log(data);
+            alert(data.status+ "Error -" +data.responseText);
+        })
+    });
+    function addkeystotable() {
+        var table = document.getElementById("tblResults");
+        var row = table.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
+        var cell8 = row.insertCell(7);
+        var cell9 = row.insertCell(8);
+        var cell10 = row.insertCell(9);
+        cell1.innerHTML = "dept:";
+        cell2.innerHTML = "avg:";
+        cell3.innerHTML = "id:";
+        cell4.innerHTML = "year:";
+        cell5.innerHTML = "Instructor:";
+        cell6.innerHTML = "title:";
+        cell7.innerHTML = "pass:";
+        cell8.innerHTML = "fail:";
+        cell9.innerHTML = "audit:";
+        cell10.innerHTML = "uuid:";
+    }
+    function gtc() {
+        if (document.getElementById("CheckGT").checked === true) {
+            document.getElementById("CheckLT").checked = false;
+        }
+    }
+    function ltc() {
+        if (document.getElementById("CheckLT").checked === true) {
+            document.getElementById("CheckGT").checked = false;
+        }
+    }
+    function  generateTable(data) {
+        var tbl_body = document.createElement("tbody");
+        var odd_even = false;
+        console.log("DATA",data);
+        $.each(data,function () {
+            var tbl_row = tbl_body.insertRow();
+            tbl_row.className = odd_even ? "odd" : "even";
+            $.each(this, function (k, v) {
+                var cell = tbl_row.insertCell();
+                cell.appendChild(document.createTextNode(v.toString()));
+            })
+            odd_even = !odd_even;
+        })
+        document.getElementById("tblResults").appendChild(tbl_body);
+    }
+
+    function handlesize() {
+        var coursesize = Number($("#csize").val());
+        if (coursesize.match("[a-zA-Z]+")){
+            alert("Please input number.");
+            ifpass=false;
+        }
+        var cgt = document.getElementById("CheckGT").checked;
+        var clt = document.getElementById("CheckLT").checked;
+        var ceq = document.getElementById("CheckEQ").checked;
+        if (clt === true && ceq === false) {
+            var table = document.getElementById("tblResults");
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                if ((Number(row.cells[6].innerText) + Number(row.cells[7].innerText)) >= coursesize) {
+                    document.getElementById("tblResults").deleteRow(i);
+                    i--
+                }
+            }
+        }
+        else if (clt === true && ceq === true) {
+            var table = document.getElementById("tblResults");
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                if ((Number(row.cells[6].innerText) + Number(row.cells[7].innerText)) > coursesize) {
+                    document.getElementById("tblResults").deleteRow(i);
+                    i--
+                }
+            }
+        }
+        else if (cgt === true && ceq === false) {
+            var table = document.getElementById("tblResults");
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                if ((Number(row.cells[6].innerText) + Number(row.cells[7].innerText)) <= coursesize) {
+                    document.getElementById("tblResults").deleteRow(i);
+                    i--
+                }
+            }
+        }
+        else if (cgt === true && ceq === true) {
+            var table = document.getElementById("tblResults");
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                if ((Number(row.cells[6].innerText) + Number(row.cells[7].innerText)) < coursesize) {
+                    document.getElementById("tblResults").deleteRow(i);
+                    i--
+                }
+            }
+        }
+        else if (cgt === false && clt === false && ceq === true) {
+            var table = document.getElementById("tblResults");
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                if ((Number(row.cells[6].innerText) + Number(row.cells[7].innerText)) !== coursesize) {
+                    document.getElementById("tblResults").deleteRow(i);
+                    i--
+                }
+            }
+        }
+    }
+
+
+    $("#btnClear").click(function(){
+        $.ajax({
+            url: 'http://localhost:4321/dataset/courses',
+            type: 'delete',
+            data: false,
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (data) {
+            alert("upload success!");
+        }).fail(function (data) {
+            alert('Error - fail to delete' + '.');
+        });
+    });
+</script>
+
+
+</body>
+</html>

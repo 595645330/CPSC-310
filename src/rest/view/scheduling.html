@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS 310 Proj scheduling UI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<p>Select Courses here:</p>
+<div>
+    <form action="">
+        <input type="radio" id="and" name="rad" value="and"> AND<br>
+        <input type="radio" id="or" name="rad" value="or"> OR<br>
+    </form>
+    Choose courses here:
+    Filter by department name:<br>
+    <input type="textarea" id="deptname"><br>
+    Filter by course id:<br>
+    <input type="textarea" id="courseno"><br>
+    <!--<button id="btnSubmit">get courses</button>-->
+</div>
+<div>
+    Choose rooms here:
+    <form action="">
+        <input type="radio" id="andr" name="rad" value="and"> AND<br>
+        <input type="radio" id="orr" name="rad" value="or"> OR<br>
+    </form>
+    Filter by short name of building:<br>
+    <input type="text" id="building"><br>
+    Filter by distance from room X:<br>
+    Meters:<br>
+    <input type="text" id="meter"><br>
+    From building X (shortname):
+    <input type="text" id="rsname"><br>
+    <!--<button id="btnSubmitr">Submit</button><br>-->
+    <button id="Scheduling">GetSchedule</button><br>
+</div>
+<div>
+    <br>Schedule will be shown here:<br>
+    <table id = "tblResultsc"></table>
+    <br>courses will be shown here:<br>
+    <table id = "tblResults"></table>
+    <br>Rooms will be shown here:<br>
+    <table id = "tblResultsr"></table>
+
+
+</div>
+<script>
+    var coursedata;
+    var roomsdata;
+    var coursesizes ={};
+    var numsecs ={};
+    var schedule = [];
+    $("#Scheduling").click(function () {
+        var myNode = document.getElementById("tblResults");
+        var filters = [];
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        var deptn = $("#deptname").val();
+        var cno = $("#courseno").val();
+
+        if ($("#deptname").val() !== "") {
+            filters.push({
+                "IS": {
+                    "courses_dept": $("#deptname").val()
+                }
+            });
+        }
+        if ($("#courseno").val() !== "") {
+            filters.push({
+                "IS": {
+                    "courses_id": $("#courseno").val()
+                }
+            })
+        }
+        if (document.getElementById("and").checked){
+            var query = {
+                "WHERE": {
+                    "AND":[{"EQ": {"courses_year": 2014}},
+                        {"AND":filters}]
+                },
+                "OPTIONS": {
+                    "COLUMNS": [
+                        "courses_dept",
+                        "courses_avg",
+                        "courses_id",
+                        "courses_year",
+                        "courses_instructor",
+                        "courses_title",
+                        "courses_pass",
+                        "courses_fail",
+                        "courses_audit",
+                        "courses_uuid"
+                    ],
+                    "ORDER": {
+                        "dir": "DOWN",
+                        "keys": ["courses_dept","courses_id"]
+                    },
+                    "FORM": "TABLE"
+                }
+            }
+        }
+        else if (document.getElementById("or").checked){
+            var query = {
+                "WHERE": {
+                    "AND":[{"EQ": {"courses_year": 2014}},
+                        {"OR":filters}]
+                },
+                "OPTIONS": {
+                    "COLUMNS": [
+                        "courses_dept",
+                        "courses_avg",
+                        "courses_id",
+                        "courses_year",
+                        "courses_instructor",
+                        "courses_title",
+                        "courses_pass",
+                        "courses_fail",
+                        "courses_audit",
+                        "courses_uuid"
+                    ],"ORDER": {
+                        "dir": "DOWN",
+                        "keys": ["courses_dept","courses_id"]
+                    },
+                    "FORM": "TABLE"
+                }
+            }
+        }
+        console.log("query", JSON.stringify(query));
+        console.log(typeof query);
+        $.ajax({
+            url: 'http://localhost:4321/query',
+            type: 'post',
+            data: JSON.stringify(query),
+            dataType: 'json',
+            contentType: 'application/json'
+        }).done(function (data) {
+            console.log("Response", data);
+            coursedata=data;
+            generateTable(data.result);
+            addkeystotable();
+            coursesizes = getcsiz();
+            numsecs = getnumofsection();
+
+
+        var myNode = document.getElementById("tblResultsr");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        var ifpass = true;
+        var ob2 = new Array();
+        var a4= new Array()
+        var building = $("#building").val();
+        var meter = $("#meter").val();
+//      var size = $("#sizeOfRoom").val();
+//      var type = $("#typeOfRoom").val();
+//      var furniture = $("#furnitureOfRoom").val();
+        var rsname = $("#rsname").val();
+        if (meter.match("[a-zA-Z]+")){
+            alert("Please input number.");
+            ifpass=false;
+        }
+        if(!document.getElementById("andr").checked
+            &&!document.getElementById("orr").checked
+            &&building!==""&&meter!==""&&rsname!==""){
+            alert("Please press and or or");
+            ifpass=false;
+        }
+        var query= {
+            "WHERE": {
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_fullname","rooms_shortname","rooms_number",
+                    "rooms_name","rooms_address", "rooms_lat","rooms_lon",
+                    "rooms_seats","rooms_type","rooms_furniture","rooms_href"
+                ],
+                "FORM": "TABLE"
+            }
+        }
+        $.ajax({
+            url: 'http://localhost:4321/query',
+            type: 'post',
+            data: JSON.stringify(query),
+            dataType: 'json',
+            contentType: 'application/json'
+        }).done(function (data) {
+            if(document.getElementById("andr").checked){
+                if(ifpass){
+                    if(building===""&&meter===""&&rsname===""){
+                        alert("Please input something");
+                        ifpass===false;
+                    }
+                    else if(building===""&&meter!=="") {
+                        alert("Please input name of building.")
+                        ifpass===false;
+                    }
+                    else{
+                        if(building!==""){
+                            var ob =findlatlon(data,building);
+                        }
+                        for(var i=0;i<data["result"].length;i++){
+                            var ifpush = true
+                            if(building!==""){
+                                var num = measure(ob["lat"],ob["lon"],
+                                    data["result"][i]["rooms_lat"],
+                                    data["result"][i]["rooms_lon"]);
+                                if(num>meter){
+                                    ifpush=false;
+                                }
+                            }
+
+                            if(rsname!==""&&rsname!==data["result"][i]["rooms_shortname"]){
+                                ifpush=false;
+                            }
+                            if(ifpush){
+                                ob2.push(data["result"][i]);
+//                                console.log("LLLL",data["result"][i]["rooms_name"])
+                                var ob3= {"rooms":data["result"][i]["rooms_name"],"capacity":data["result"][i]["rooms_seats"]}
+                                a4.push(ob3)
+                            }
+                        }
+                    }
+                }
+            }
+            else if(document.getElementById("orr").checked){
+                if(ifpass){
+                    if(building===""&&meter===""&&rsname===""){
+                        alert("Please input something");
+                        ifpass===false;
+                    }
+                    else if(building===""&&meter!=="") {
+                        alert("Please input name of building.")
+                        ifpass===false;
+                    }
+                    else{
+                        if(building!==""){
+                            var ob =findlatlon(data,building);
+                        }
+                        for(var i=0;i<data["result"].length;i++){
+                            var ifpush = true
+                            var num = measure(ob["lat"],ob["lon"],
+                                data["result"][i]["rooms_lat"],
+                                data["result"][i]["rooms_lon"]);
+                            if(num<=meter||rsname===data["result"][i]["rooms_shortname"]){
+                                ob2.push(data["result"][i]);
+//                                console.log("LLLL",data["result"][i]["rooms_name"])
+                                var ob3= {"rooms":data["result"][i]["rooms_name"],"capacity":data["result"][i]["rooms_seats"]}
+                                a4.push(ob3)
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                if(ifpass){
+                    if(building===""&&meter===""&&rsname===""){
+                        alert("Please input something");
+                        ifpass===false;
+                    }
+                    else if(building===""&&meter!=="") {
+                        alert("Please input name of building.")
+                        ifpass===false;
+                    }
+                    else{
+                        if(building!==""){
+                            var ob =findlatlon(data,building);
+                        }
+                        for(var i=0;i<data["result"].length;i++){
+                            var ifpush = true
+                            if(building!==""){
+                                var num = measure(ob["lat"],ob["lon"],
+                                    data["result"][i]["rooms_lat"],
+                                    data["result"][i]["rooms_lon"]);
+                                if(num>meter){
+                                    ifpush=false;
+                                }
+                            }
+
+                            if(rsname!==""&&rsname!==data["result"][i]["rooms_shortname"]){
+                                ifpush=false;
+                            }
+                            if(ifpush){
+                                ob2.push(data["result"][i]);
+//                                console.log("LLLL",data["result"][i]["rooms_name"])
+                                var ob3= {"rooms":data["result"][i]["rooms_name"],"capacity":data["result"][i]["rooms_seats"]}
+                                a4.push(ob3)
+                            }
+                        }
+                    }
+                }
+            }
+            console.log(ob2);
+            console.log("A4",JSON.stringify(a4));
+            if(ifpass){
+                if(ob2.length===0){
+                    alert("Can not find any rooms.");
+                }
+
+                data["result"]=ob2;
+                roomsdata=data;
+                generateTable2(data.result);
+            }
+
+            //-----------------
+
+            console.log(JSON.stringify(numsecs));
+            console.log(JSON.stringify(coursesizes));
+            var capcty;
+            var total = 0;
+            for (var i in numsecs){
+                console.log("sectype"+ typeof numsecs[i]);
+                total = total + numsecs[i];
+            }
+            console.log("total"+total);
+            var failtoputin = 0;
+            for(var i = 0; i < 15; i++) {
+                capcty = 0;
+                for (var j in a4){
+                    capcty = a4[j]["capacity"];
+                    var temp = 0;
+                    console.log("loop"+j);
+                    console.log("temp"+temp);
+                    console.log("capcty"+capcty);
+                    console.log(capcty - temp);
+
+                    var coursename;
+
+
+                    for (var k in coursesizes){
+                        if((capcty - coursesizes[k] <= capcty - temp) && (capcty - coursesizes[k] >= 0)){
+                            temp = coursesizes[k];
+                            coursename = k;
+                        }
+                    }
+                    console.log(typeof coursename);
+                    if (typeof coursename !== 'undefined' && numsecs[coursename] > 1) {
+                        schedule.push({"time": i, "course": coursename, "room": a4[j]["rooms"]});
+                            var ssss = numsecs[coursename] - 1;
+                            numsecs[coursename] = ssss;
+                            console.log("else new numsecs" + JSON.stringify(numsecs));
+
+                    }
+                    else if (numsecs[coursename] === 1){
+                        schedule.push({"time": i, "course": coursename, "room": a4[j]["rooms"]});
+                        delete numsecs[coursename];
+                        delete coursesizes[coursename];
+                    }
+                }
+            }
+
+            for (var i in numsecs){
+                failtoputin = failtoputin + numsecs[i];
+            }
+            for (var i in schedule){
+                if(schedule[i]['time'] === 0){
+                    schedule[i]['time'] = 'M/W/F 8am-9am';
+                }
+                else if(schedule[i]['time'] === 1){
+                    schedule[i]['time'] = 'M/W/F 9am-10am';
+                }
+                else if(schedule[i]['time'] === 2){
+                    schedule[i]['time'] = 'M/W/F 10am-11am';
+                }
+                else if(schedule[i]['time'] === 3){
+                    schedule[i]['time'] = 'M/W/F 11am-12';
+                }
+                else if(schedule[i]['time'] === 4){
+                    schedule[i]['time'] = 'M/W/F 12-1pm';
+                }
+                else if(schedule[i]['time'] === 5){
+                    schedule[i]['time'] = 'M/W/F 1pm-2pm';
+                }
+                else if(schedule[i]['time'] === 6){
+                    schedule[i]['time'] = 'M/W/F 2pm-3pm';
+                }
+                else if(schedule[i]['time'] === 7){
+                    schedule[i]['time'] = 'M/W/F 3pm-4pm';
+                }
+                else if(schedule[i]['time'] === 8){
+                    schedule[i]['time'] = 'M/W/F 4pm-5pm';
+                }
+                else if(schedule[i]['time'] === 9){
+                    schedule[i]['time'] = 'TUE/TH 8-9.30am';
+                }
+                else if(schedule[i]['time'] === 10){
+                    schedule[i]['time'] = 'TUE/TH 9.30-11am';
+                }
+                else if(schedule[i]['time'] === 11){
+                    schedule[i]['time'] = 'TUE/TH 11am-12.30pm';
+                }
+                else if(schedule[i]['time'] === 12){
+                    schedule[i]['time'] = 'TUE/TH 12.30pm-2pm';
+                }
+                else if(schedule[i]['time'] === 13){
+                    schedule[i]['time'] = 'TUE/TH 2pm-3.30pm';
+                }
+                else if(schedule[i]['time'] === 14){
+                    schedule[i]['time'] = 'TUE/TH 3.30am-5pm';
+                }
+
+            }
+            console.log("scheduled"+schedule.length);
+            console.log("fail"+failtoputin);
+            var qualitycheck = (total - failtoputin)/total;
+            console.log("quality"+qualitycheck);
+
+            if(qualitycheck > 0.8){alert("quality is" + (qualitycheck*100) + "%, it is good.")}
+            else if (qualitycheck >= 0.5 && qualitycheck <= 0.8) {"quality is" + (qualitycheck*100) + "%, it is not too bad."}
+            else {alert("quality is" + (qualitycheck*100) + "%, that is terrible, select less courses or more rooms!")}
+
+            console.log(JSON.stringify(schedule));
+            console.log(JSON.stringify(coursesizes));
+            console.log(JSON.stringify(numsecs));
+            generateTable3(schedule);
+
+            //------------------
+
+        }).fail(function (data) {
+            console.log(data);
+            console.error("Error - Failed to submit query");
+        })
+        }).fail(function (data) {
+            console.log(data);
+            alert(data.status+ "Error -" +data.responseText);
+        })
+    });
+
+
+    //    $("#btnSubmit").click(function () {
+    //        var myNode = document.getElementById("tblResults");
+    //        var filters = [];
+    //        while (myNode.firstChild) {
+    //            myNode.removeChild(myNode.firstChild);
+    //        }
+    //        var deptn = $("#deptname").val();
+    //        var cno = $("#courseno").val();
+    //
+    //        if ($("#deptname").val() !== "") {
+    //            filters.push({
+    //                "IS": {
+    //                    "courses_dept": $("#deptname").val()
+    //                }
+    //            });
+    //        }
+    //        if ($("#courseno").val() !== "") {
+    //            filters.push({
+    //                "IS": {
+    //                    "courses_id": $("#courseno").val()
+    //                }
+    //            })
+    //        }
+    //        if (document.getElementById("and").checked){
+    //            var query = {
+    //                "WHERE": {
+    //                    "AND":[{"EQ": {"courses_year": 2014}},
+    //                        {"AND":filters}]
+    //                },
+    //                "OPTIONS": {
+    //                    "COLUMNS": [
+    //                        "courses_dept",
+    //                        "courses_avg",
+    //                        "courses_id",
+    //                        "courses_year",
+    //                        "courses_instructor",
+    //                        "courses_title",
+    //                        "courses_pass",
+    //                        "courses_fail",
+    //                        "courses_audit",
+    //                        "courses_uuid"
+    //                    ],
+    //                    "FORM": "TABLE"
+    //                }
+    //            }
+    //        }
+    //        else if (document.getElementById("or").checked){
+    //            var query = {
+    //                "WHERE": {
+    //                    "AND":[{"EQ": {"courses_year": 2014}},
+    //                        {"OR":filters}]
+    //                },
+    //                "OPTIONS": {
+    //                    "COLUMNS": [
+    //                        "courses_dept",
+    //                        "courses_avg",
+    //                        "courses_id",
+    //                        "courses_year",
+    //                        "courses_instructor",
+    //                        "courses_title",
+    //                        "courses_pass",
+    //                        "courses_fail",
+    //                        "courses_audit",
+    //                        "courses_uuid"
+    //                    ],
+    //                    "FORM": "TABLE"
+    //                }
+    //            }
+    //        }
+    //        console.log("query", JSON.stringify(query));
+    //        console.log(typeof query);
+    //        $.ajax({
+    //            url: 'http://localhost:4321/query',
+    //            type: 'post',
+    //            data: JSON.stringify(query),
+    //            dataType: 'json',
+    //            contentType: 'application/json'
+    //        }).done(function (data) {
+    //            console.log("Response", data);
+    //            coursedata=data;
+    //            generateTable(data.result);
+    //            addkeystotable();
+    //            var coursesizes = getcsiz();
+    //            console.log(JSON.stringify(coursesizes));
+    //        }).fail(function (data) {
+    //            console.log(data);
+    //            alert(data.status+ "Error -" +data.responseText);
+    //        })
+    //    });
+
+
+
+    function getcsiz() {
+        var table = document.getElementById("tblResults");
+        var course = [];
+        var csize = [];
+        var tempdept = table.rows[1].cells[0].innerText;
+        var tempid = table.rows[1].cells[2].innerText;
+        var tempp = table.rows[1].cells[6].innerText;
+        var tempf = table.rows[1].cells[7].innerText;
+        var temps = Number(tempp) + Number(tempf);
+        for (var i = 1, row; row = table.rows[i]; i++) {
+            if (tempdept === row.cells[0].innerText && tempid === row.cells[2].innerText) {
+                if (Number(row.cells[6].innerText) + Number(row.cells[7].innerText) > temps) {
+                    temps = Number(row.cells[6].innerText) + Number(row.cells[7].innerText);
+                }
+                if (typeof table.rows[i+1] === 'undefined'){
+                    csize.push(temps);
+                    course.push(tempdept + tempid);
+                }
+            }
+            else {
+                csize.push(temps);
+                temps = Number(row.cells[6].innerText) + Number(row.cells[7].innerText);
+                course.push(tempdept + tempid);
+                tempid = row.cells[2].innerText;
+                tempdept = row.cells[0].innerText;
+                if (typeof table.rows[i+1] === 'undefined'){
+                    csize.push(temps);
+                    course.push(tempdept + tempid);
+                }
+            }
+        }
+        return toObject(course,csize);
+    }
+    function getnumofsection() {
+        var table = document.getElementById("tblResults");
+        var tempdept = table.rows[1].cells[0].innerText;
+        var tempid = table.rows[1].cells[2].innerText;
+        var num = 0;
+        var numofsecs = [];
+        var courses = [];
+        for (var i = 1, row; row = table.rows[i]; i++){
+            if (tempdept === row.cells[0].innerText && tempid === row.cells[2].innerText){
+                num++;
+            }
+            else {
+                numofsecs.push(Math.ceil(num/3));
+                num=1;
+                courses.push(tempdept + tempid);
+                tempid = row.cells[2].innerText;
+                tempdept = row.cells[0].innerText;
+            }
+
+            if (typeof table.rows[i+1] === 'undefined'){
+                courses.push(tempdept + tempid);
+                numofsecs.push(Math.ceil(num/3));
+            }
+        }
+        return toObject(courses,numofsecs);
+    }
+    function toObject(names, values) {
+        var result = {};
+        for (var i = 0; i < names.length; i++)
+            result[names[i]] = values[i];
+        return result;
+    }
+    function addkeystotable() {
+        var table = document.getElementById("tblResults");
+        var row = table.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
+        var cell8 = row.insertCell(7);
+        var cell9 = row.insertCell(8);
+        var cell10 = row.insertCell(9);
+        cell1.innerHTML = "dept:";
+        cell2.innerHTML = "avg:";
+        cell3.innerHTML = "id:";
+        cell4.innerHTML = "year:";
+        cell5.innerHTML = "Instructor:";
+        cell6.innerHTML = "title:";
+        cell7.innerHTML = "pass:";
+        cell8.innerHTML = "fail:";
+        cell9.innerHTML = "audit:";
+        cell10.innerHTML = "uuid:";
+    }
+    function  generateTable(data) {
+        var tbl_body = document.createElement("tbody");
+        var odd_even = false;
+        console.log("DATA",data);
+        $.each(data,function () {
+            var tbl_row = tbl_body.insertRow();
+            tbl_row.className = odd_even ? "odd" : "even";
+            $.each(this, function (k, v) {
+                var cell = tbl_row.insertCell();
+                cell.appendChild(document.createTextNode(v.toString()));
+            })
+            odd_even = !odd_even;
+        })
+        document.getElementById("tblResults").appendChild(tbl_body);
+    }
+
+
+    //---------------rooms below------------
+
+    //    $("#btnSubmitr").click(function () {
+    //
+    //        var myNode = document.getElementById("tblResultsr");
+    //        while (myNode.firstChild) {
+    //            myNode.removeChild(myNode.firstChild);
+    //        }
+    //        var ifpass = true;
+    //        var ob2 = new Array();
+    //        var building = $("#building").val();
+    //        var meter = $("#meter").val();
+    ////       var size = $("#sizeOfRoom").val();
+    ////        var type = $("#typeOfRoom").val();
+    ////        var furniture = $("#furnitureOfRoom").val();
+    //        var rsname = $("#rsname").val();
+    //        if (meter.match("[a-zA-Z]+")){
+    //            alert("Please input number.");
+    //            ifpass=false;
+    //        }
+    //        if(!document.getElementById("andr").checked
+    //            &&!document.getElementById("orr").checked
+    //            &&building!==""&&meter!==""&&rsname!==""){
+    //            alert("Please press and or or");
+    //            ifpass=false;
+    //        }
+    //        var query= {
+    //            "WHERE": {
+    //            },
+    //            "OPTIONS": {
+    //                "COLUMNS": [
+    //                    "rooms_fullname","rooms_shortname","rooms_number",
+    //                    "rooms_name","rooms_address", "rooms_lat","rooms_lon",
+    //                    "rooms_seats","rooms_type","rooms_furniture","rooms_href"
+    //                ],
+    //                "FORM": "TABLE"
+    //            }
+    //        }
+    //        $.ajax({
+    //            url: 'http://localhost:4321/query',
+    //            type: 'post',
+    //            data: JSON.stringify(query),
+    //            dataType: 'json',
+    //            contentType: 'application/json'
+    //        }).done(function (data) {
+    //            if(document.getElementById("andr").checked){
+    //                if(ifpass){
+    //                    if(building===""&&meter===""&&rsname===""){
+    //                        alert("Please input something");
+    //                        ifpass===false;
+    //                    }
+    //                    else if(building===""&&meter!=="") {
+    //                        alert("Please input name of building.")
+    //                        ifpass===false;
+    //                    }
+    //                    else{
+    //                        if(building!==""){
+    //                            var ob =findlatlon(data,building);
+    //                        }
+    //                        for(var i=0;i<data["result"].length;i++){
+    //                            var ifpush = true
+    //                            if(building!==""){
+    //                                var num = measure(ob["lat"],ob["lon"],
+    //                                    data["result"][i]["rooms_lat"],
+    //                                    data["result"][i]["rooms_lon"]);
+    //                                if(num>meter){
+    //                                    ifpush=false;
+    //                                }
+    //                            }
+    //
+    //                            if(rsname!==""&&rsname!==data["result"][i]["rooms_shortname"]){
+    //                                ifpush=false;
+    //                            }
+    //                            if(ifpush){
+    //                                ob2.push(data["result"][i]);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //            else if(document.getElementById("orr").checked){
+    //                if(ifpass){
+    //                    if(building===""&&meter===""&&rsname===""){
+    //                        alert("Please input something");
+    //                        ifpass===false;
+    //                    }
+    //                    else if(building===""&&meter!=="") {
+    //                        alert("Please input name of building.")
+    //                        ifpass===false;
+    //                    }
+    //                    else{
+    //                        if(building!==""){
+    //                            var ob =findlatlon(data,building);
+    //                        }
+    //                        for(var i=0;i<data["result"].length;i++){
+    //                            var ifpush = true
+    //                            var num = measure(ob["lat"],ob["lon"],
+    //                                data["result"][i]["rooms_lat"],
+    //                                data["result"][i]["rooms_lon"]);
+    //                            if(num<=meter||rsname===data["result"][i]["rooms_shortname"]){
+    //                                ob2.push(data["result"][i]);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //            else{
+    //                if(ifpass){
+    //                    if(building===""&&meter===""&&rsname===""){
+    //                        alert("Please input something");
+    //                        ifpass===false;
+    //                    }
+    //                    else if(building===""&&meter!=="") {
+    //                        alert("Please input name of building.")
+    //                        ifpass===false;
+    //                    }
+    //                    else{
+    //                        if(building!==""){
+    //                            var ob =findlatlon(data,building);
+    //                        }
+    //                        for(var i=0;i<data["result"].length;i++){
+    //                            var ifpush = true
+    //                            if(building!==""){
+    //                                var num = measure(ob["lat"],ob["lon"],
+    //                                    data["result"][i]["rooms_lat"],
+    //                                    data["result"][i]["rooms_lon"]);
+    //                                if(num>meter){
+    //                                    ifpush=false;
+    //                                }
+    //                            }
+    //
+    //                            if(rsname!==""&&rsname!==data["result"][i]["rooms_shortname"]){
+    //                                ifpush=false;
+    //                            }
+    //                            if(ifpush){
+    //                                ob2.push(data["result"][i]);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //            console.log(ob2);
+    //            if(ifpass){
+    //                if(ob2.length===0){
+    //                    alert("Can not find any rooms.");
+    //                }
+    //                data["result"]=ob2;
+    //                roomsdata=data;
+    //                generateTable2(data.result);
+    //            }
+    //        }).fail(function (data) {
+    //            console.log(data);
+    //            console.error("Error - Failed to submit query");
+    //        })
+    //    });
+
+    function findlatlon(data,building){
+        var ob={"lat":"","lon":""};
+        for(var d1=0; d1< data["result"].length; d1++){
+            if(data["result"][d1]["rooms_shortname"]===building){
+                ob["lat"]=data["result"][d1]["rooms_lat"];
+                ob["lon"]=data["result"][d1]["rooms_lon"];
+                break;
+            }
+        }
+        return ob;
+    }
+    function measure(lat1, lon1, lat2, lon2){  // generally used geo measurement function
+        var R = 6378.137; // Radius of earth in KM
+        var dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
+        var dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+        return d * 1000; // meters
+    }
+    function  generateTable2(data) {
+        var tbl_body = document.createElement("tbody");
+        var odd_even = false;
+        console.log("DATA",data);
+        $.each(data,function () {
+            var tbl_row = tbl_body.insertRow();
+            tbl_row.className = odd_even ? "odd" : "even";
+            $.each(this, function (k, v) {
+                var cell = tbl_row.insertCell();
+                cell.appendChild(document.createTextNode(v.toString()));
+            })
+            odd_even = !odd_even;
+        })
+        document.getElementById("tblResultsr").appendChild(tbl_body);
+    }
+
+    function  generateTable3(data) {
+        var tbl_body = document.createElement("tbody");
+        var odd_even = false;
+        console.log("DATA",data);
+        $.each(data,function () {
+            var tbl_row = tbl_body.insertRow();
+            tbl_row.className = odd_even ? "odd" : "even";
+            $.each(this, function (k, v) {
+                var cell = tbl_row.insertCell();
+                cell.appendChild(document.createTextNode(v.toString()));
+            })
+            odd_even = !odd_even;
+        })
+        document.getElementById("tblResultsc").appendChild(tbl_body);
+    }
+
+
+
+</script>
+</body>
+</html>

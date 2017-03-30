@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS 310 Proj</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<p>Here is the UI for Rooms</p >
+<input type="file" name="fileUpload" id="fileUpload"/>
+<button id="btnUpload">Upload data for Rooms here</button><br>
+<p><button id="btnClear">Clear</button></p>
+
+<div>
+    <form>
+        Name of building:<br>
+        <input type="text" id="building"><br>
+        Meters:<br>
+        <input type="text" id="meter"><br>
+        Size of room:<br>
+        <input type="text" id="sizeOfRoom"><br>
+        Type of room<br>
+        <input type="text" id="typeOfRoom"><br>
+        Furniture of room<br>
+        <input type="text" id="furnitureOfRoom"><br>
+    </form>
+    <button id="btnSubmit">Submit</button><br>
+    <div id="map" style="width:100%;height:500px"></div>
+    <button id="AddMarker">AddMarker</button><br>
+    <table id ="tblResults"></table>
+</div>
+
+
+<script>
+    var markers = new Array();
+    //var infos =new Array();
+    function myMap() {
+        var myCenter = new google.maps.LatLng(49.264801, -123.252766);
+        var mapCanvas = document.getElementById("map");
+        var mapOptions = {center: myCenter, zoom: 15};
+        var map = new google.maps.Map(mapCanvas, mapOptions);
+        var info = new google.maps.InfoWindow();
+        var infos = new Array();
+        $("#AddMarker").click(function () {
+            deleteMarkers();
+            infos=[];
+            for(var i =0; i< document.getElementById("tblResults").rows.length-1; i++){
+                if(document.getElementById("Checkbox"+i.toString()).checked === true){
+                    var table =document.getElementById("Checkbox"+i.toString());
+                    console.log("Table",table);
+                    var location = table.value.split(",");
+                    var center= new google.maps.LatLng(Number(location[0]),Number(location[1]));
+                    infos.push(location[2]);
+                    var marker = new google.maps.Marker({position:center});
+                    marker.setMap(map);
+                    google.maps.event.addListener(marker,'mouseover',function() {
+                        for(var i=0;i<markers.length;i++){
+                            if(markers[i]===this){
+                                info.setOptions({
+                                    content: infos[i]
+                                });
+                            }
+                        }
+                        info.open(map, this);
+                    });
+                    markers.push(marker);
+                }
+            }
+        });
+    }
+
+    function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+
+    // Removes the markers from the map, but keeps them in the array.
+    function clearMarkers() {
+        setMapOnAll(null);
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+    }
+
+
+    $("#btnUpload").click(function(){
+        var filetoLoad = document.getElementById("fileUpload").files[0];
+        var fileReader = new FileReader();
+        var ifpass=true;
+        try{
+            fileReader.readAsArrayBuffer(filetoLoad);
+        }catch(err){
+            console.log("Error");
+            ifpass=false;
+        }
+        if(ifpass){
+            fileReader.onload = function (evt) {
+                var id = filetoLoad.name.split('.')[0];
+                var content = evt.target.result;
+                var formData = new FormData();
+                formData.append('body', new Blob([content]));
+                $.ajax({
+                    url: 'http://localhost:4321/dataset/'+ id,
+                    type: 'put',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                }).done(function (data) {
+                    console.log(filetoLoad.name + 'was uploaded');
+                }).fail(function (data) {
+                    console.log('Error - fail to upload' + filetoLoad.name + '.');
+                });
+            }
+        }
+    });
+
+    $("#btnClear").click(function(){
+        $.ajax({
+            url: 'http://localhost:4321/dataset/rooms',
+            type: 'delete',
+            data: false,
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (data) {
+            alert("Yes");
+        }).fail(function (data) {
+            alert('Error - fail to delete' + '.');
+        });
+    });
+
+    $("#btnSubmit").click(function () {
+        var myNode = document.getElementById("tblResults");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        var ifpass = true;
+        var ob2 = new Array();
+        var building = $("#building").val();
+        var meter = $("#meter").val();
+        var size = $("#sizeOfRoom").val();
+        var type = $("#typeOfRoom").val();
+        var furniture = $("#furnitureOfRoom").val();
+        if (size.match("[a-zA-Z]+")||meter.match("[a-zA-Z]+")){
+            alert("Please input number.");
+            ifpass=false;
+        }
+        var query= {
+            "WHERE": {
+            },
+            "OPTIONS": {
+                "COLUMNS": [
+                    "rooms_fullname","rooms_shortname","rooms_number",
+                    "rooms_name","rooms_address", "rooms_lat","rooms_lon",
+                    "rooms_seats","rooms_type","rooms_furniture","rooms_href"
+                ],
+                "FORM": "TABLE"
+            }
+        }
+        $.ajax({
+            url: 'http://localhost:4321/query',
+            type: 'post',
+            data: JSON.stringify(query),
+            dataType: 'json',
+            contentType: 'application/json'
+        }).done(function (data) {
+            if(ifpass){
+                if(building===""&&meter===""&&size===""&&type===""&&furniture===""){
+                    alert("Please input something");
+                    ifpass===false;
+                }
+                else if(building===""&&meter!=="") {
+                    alert("Please input name of building.")
+                    ifpass===false;
+                }
+                else{
+                    if(building!==""){
+                        var ob =findlatlon(data,building);
+                    }
+                    for(var i=0;i<data["result"].length;i++){
+                        var ifpush = true
+                        if(building!==""){
+                            var num = measure(ob["lat"],ob["lon"],
+                                data["result"][i]["rooms_lat"],
+                                data["result"][i]["rooms_lon"]);
+                            if(num>meter){
+                                ifpush=false;
+                            }
+                        }
+                        if(size!==""){
+                            var num2 = data["result"][i]["rooms_seats"]
+                            if(num2<=size){
+                                ifpush=false;
+                            }
+                        }
+                        if(type!==""&&type!==data["result"][i]["rooms_type"]){
+                            ifpush=false;
+                        }
+                        if(furniture!==""&&furniture!==data["result"][i]["rooms_furniture"]){
+                            ifpush=false;
+                        }
+                        if(ifpush){
+                            ob2.push(data["result"][i]);
+                        }
+                    }
+                }
+            }
+            console.log(ob2);
+            if(ifpass){
+                if(ob2.length===0){
+                    alert("Can not find any rooms.");
+                    ifpass=false;
+                }
+                if(ifpass){
+                    data["result"]=ob2;
+                    generateTable(data.result);
+                    addkeystotable();
+                }
+            }
+        }).fail(function (data) {
+            console.log(data);
+            console.error("Error - Failed to submit query");
+        })
+    });
+
+    function addkeystotable() {
+        var table = document.getElementById("tblResults");
+        var row = table.insertRow(0);
+        var cell0 = row.insertCell(0);
+        var cell1 = row.insertCell(1);
+        var cell2 = row.insertCell(2);
+        var cell3 = row.insertCell(3);
+        var cell4 = row.insertCell(4);
+        var cell5 = row.insertCell(5);
+        var cell6 = row.insertCell(6);
+        var cell7 = row.insertCell(7);
+        var cell8 = row.insertCell(8);
+        var cell9 = row.insertCell(9);
+        var cell10 = row.insertCell(10);
+        var cell11 = row.insertCell(11);
+        cell0.innerHTML = "Select:";
+        cell1.innerHTML = "Fullname:";
+        cell2.innerHTML = "Shortname:";
+        cell3.innerHTML = "Number:";
+        cell4.innerHTML = "Name:";
+        cell5.innerHTML = "Address:";
+        cell6.innerHTML = "Lat:";
+        cell7.innerHTML = "Lon:";
+        cell8.innerHTML = "Seats:";
+        cell9.innerHTML = "Type:";
+        cell10.innerHTML = "Furniture:";
+        cell11.innerHTML = "Href:";
+    }
+
+    function findlatlon(data,building){
+        var ob={"lat":"","lon":""};
+        for(var d1=0; d1< data["result"].length; d1++){
+            if(data["result"][d1]["rooms_shortname"]===building){
+                ob["lat"]=data["result"][d1]["rooms_lat"];
+                ob["lon"]=data["result"][d1]["rooms_lon"];
+                break;
+            }
+        }
+        return ob;
+    }
+
+    function  generateTable(data) {
+        var tbl_body = document.createElement("tbody");
+        var odd_even = false;
+        console.log("DATA",data);
+        var num=0;
+        $.each(data,function () {
+            var tbl_row = tbl_body.insertRow();
+            tbl_row.className = odd_even ? "odd" : "even";
+            var checkbox = document.createElement('input');
+            checkbox.type = "checkbox";
+            checkbox.name = "Checkbox"+num.toString();
+            checkbox.value = [data[num]["rooms_lat"],data[num]["rooms_lon"],data[num]["rooms_shortname"]];
+            checkbox.id = "Checkbox"+num.toString();
+            tbl_row.appendChild(checkbox);
+            $.each(this, function (k, v) {
+                var cell = tbl_row.insertCell();
+                cell.appendChild(document.createTextNode(v.toString()));
+            })
+            odd_even = !odd_even;
+            num=num+1;
+        })
+        document.getElementById("tblResults").appendChild(tbl_body);
+    }
+
+    function measure(lat1, lon1, lat2, lon2){  // generally used geo measurement function
+        var R = 6378.137; // Radius of earth in KM
+        var dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
+        var dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+        return d * 1000; // meters
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfGn8JGFxbHm2cFDCAiB9poU3BjIttskM&callback=myMap"></script>
+</body>
+</html>
